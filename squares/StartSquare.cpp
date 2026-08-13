@@ -1,13 +1,12 @@
 #include "StartSquare.hpp"
 
-StartSquare::StartSquare(): _name("Start"), _timesLandedOn(0) {}
+StartSquare::StartSquare(): BaseSquare("Start", 0) {}
 
-StartSquare::StartSquare(const StartSquare &other): _name(other._name), _timesLandedOn(other._timesLandedOn) {}
+StartSquare::StartSquare(const StartSquare &other): BaseSquare(other) {}
 
 StartSquare &StartSquare::operator=(const StartSquare &other) {
     if (this != &other) {
-        _name = other._name;
-        _timesLandedOn = other._timesLandedOn;
+        BaseSquare::operator=(other);
     }
     return *this;
 }

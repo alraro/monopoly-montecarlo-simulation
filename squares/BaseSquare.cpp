@@ -26,3 +26,5 @@ int BaseSquare::getTimesLandedOn() const {
 const std::string &BaseSquare::getName() const {
     return this->_name;
 }
+
+BaseSquare::BaseSquare(std::string name, unsigned int timesLandedOn): _name(name), _timesLandedOn(timesLandedOn) {}

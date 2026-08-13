@@ -15,6 +15,6 @@ class PropertySquare : public BaseSquare {
         virtual void landOn(const Player &player);
 
         virtual BaseSquare *clone() const;
-}
+};
 
 #endif

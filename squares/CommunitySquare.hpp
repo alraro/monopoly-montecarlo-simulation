@@ -12,6 +12,6 @@ class CommunitySquare : public BaseSquare {
         virtual ~CommunitySquare();
 
         virtual BaseSquare *clone() const;
-}
+};
 
 #endif

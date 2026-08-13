@@ -1,13 +1,12 @@
 #include "JailSquare.hpp"
 
-JailSquare::JailSquare(): _name("Jail"), _timesLandedOn(0) {}
+JailSquare::JailSquare(): BaseSquare("Jail", 0) {}
 
-JailSquare::JailSquare(const JailSquare &other): _name(other._name), _timesLandedOn(other._timesLandedOn) {}
+JailSquare::JailSquare(const JailSquare &other): BaseSquare(other) {}
 
 JailSquare &JailSquare::operator=(const JailSquare &other) {
     if (this != &other) {
-        _name = other._name;
-        _timesLandedOn = other._timesLandedOn;
+        BaseSquare::operator=(other);
     }
     return *this;
 }
@@ -15,6 +14,8 @@ JailSquare &JailSquare::operator=(const JailSquare &other) {
 JailSquare::~JailSquare() {}
 
 EffectResult JailSquare::getSquareEffect(const Player &player) const {
+    (void)player; // Unused parameter
+
     EffectResult result;
     result.type = EffectType::NONE;
     result.value = 0;

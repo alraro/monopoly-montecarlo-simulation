@@ -1,13 +1,12 @@
 #include "LuckSquare.hpp"
 
-LuckSquare::LuckSquare(): _name("Luck"), _timesLandedOn(0) {}
+LuckSquare::LuckSquare(): BaseSquare("Luck", 0) {}
 
-LuckSquare::LuckSquare(const LuckSquare &other): _name(other._name), _timesLandedOn(other._timesLandedOn) {}
+LuckSquare::LuckSquare(const LuckSquare &other): BaseSquare(other) {}
 
 LuckSquare &LuckSquare::operator=(const LuckSquare &other) {
     if (this != &other) {
-        _name = other._name;
-        _timesLandedOn = other._timesLandedOn;
+        BaseSquare::operator=(other);
     }
     return *this;
 }
@@ -15,6 +14,8 @@ LuckSquare &LuckSquare::operator=(const LuckSquare &other) {
 LuckSquare::~LuckSquare() {}
 
 EffectResult LuckSquare::getSquareEffect(const Player &player) const {
+    (void)player; // Unused parameter
+
     EffectResult result;
     result.type = EffectType::NONE;
     result.value = 0;

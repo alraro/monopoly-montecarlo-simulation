@@ -1,13 +1,12 @@
 #include "CommunitySquare.hpp"
 
-CommunitySquare::CommunitySquare(): _name("Community"), _timesLandedOn(0) {}
+CommunitySquare::CommunitySquare(): BaseSquare("Community", 0) {}
 
-CommunitySquare::CommunitySquare(const CommunitySquare &other): _name(other._name), _timesLandedOn(other._timesLandedOn) {}
+CommunitySquare::CommunitySquare(const CommunitySquare &other): BaseSquare(other) {}
 
 CommunitySquare &CommunitySquare::operator=(const CommunitySquare &other) {
     if (this != &other) {
-        _name = other._name;
-        _timesLandedOn = other._timesLandedOn;
+        BaseSquare::operator=(other);
     }
     return *this;
 }
@@ -15,6 +14,8 @@ CommunitySquare &CommunitySquare::operator=(const CommunitySquare &other) {
 CommunitySquare::~CommunitySquare() {}
 
 EffectResult CommunitySquare::getSquareEffect(const Player &player) const {
+    (void)player; // Unused parameter
+
     EffectResult result;
     result.type = EffectType::NONE;
     result.value = 0;

@@ -12,6 +12,6 @@ class GoToJailSquare : public BaseSquare {
         virtual ~GoToJailSquare();
 
         virtual BaseSquare *clone() const;
-}
+};
 
 #endif

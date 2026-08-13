@@ -11,6 +11,6 @@ class StartSquare : public BaseSquare {
         StartSquare &operator=(const StartSquare &other);
         virtual ~StartSquare();
         virtual BaseSquare *clone() const;
-}
+};
 
 #endif

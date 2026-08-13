@@ -37,10 +37,32 @@ Board *BoardBuilder::build() {
     return _board;
 }
 
-BoardBuilder &BoardBuilder::addStartSquare();
-BoardBuilder &BoardBuilder::addJailSquare();
-BoardBuilder &BoardBuilder::addGoToJailSquare();
-BoardBuilder &BoardBuilder::addLuckSquare();
-BoardBuilder &BoardBuilder::addCommunitySquare();
+BoardBuilder &BoardBuilder::addStartSquare() {
+    _board->addSquare(new StartSquare());
+    return *this;
+}
 
-BoardBuilder &BoardBuilder::addPropertySquare(std::string name);
+BoardBuilder &BoardBuilder::addJailSquare() {
+    _board->addSquare(new JailSquare());
+    return *this;
+}
+
+BoardBuilder &BoardBuilder::addGoToJailSquare() {
+    _board->addSquare(new GoToJailSquare());
+    return *this;
+}
+
+BoardBuilder &BoardBuilder::addLuckSquare() {
+    _board->addSquare(new LuckSquare());
+    return *this;
+}
+
+BoardBuilder &BoardBuilder::addCommunitySquare() {
+    _board->addSquare(new CommunitySquare());
+    return *this;
+}
+
+BoardBuilder &BoardBuilder::addPropertySquare(std::string name) {
+    _board->addSquare(new PropertySquare(name));
+    return *this;
+}

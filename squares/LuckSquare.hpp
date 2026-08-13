@@ -12,6 +12,6 @@ class LuckSquare : public BaseSquare {
         virtual ~LuckSquare();
 
         virtual BaseSquare *clone() const;
-}
+};
 
 #endif
