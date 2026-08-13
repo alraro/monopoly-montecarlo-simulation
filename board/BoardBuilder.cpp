@@ -33,8 +33,8 @@ BoardBuilder &BoardBuilder::reset() {
     return *this;
 }
 
-Board *BoardBuilder::build() {
-    return _board;
+const Board &BoardBuilder::getBoard() const {
+    return *_board;
 }
 
 BoardBuilder &BoardBuilder::addStartSquare() {

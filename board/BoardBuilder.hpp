@@ -12,7 +12,7 @@ class BoardBuilder {
         ~BoardBuilder();
 
         BoardBuilder &reset();
-        Board *build();
+        const Board &getBoard() const;
 
         BoardBuilder &addStartSquare();
         BoardBuilder &addJailSquare();
