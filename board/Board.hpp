@@ -5,6 +5,7 @@
 class Board {
     private:
         std::vector<BaseSquare *> _squares;
+        unsigned int _jailSquareIndex;
     public:
         Board();
         ~Board();
@@ -13,6 +14,12 @@ class Board {
 
         void addSquare(BaseSquare *square);
         void printBoard() const;
+        BaseSquare *getSquare(unsigned int index) const;
+
+        unsigned int getJailSquareIndex() const;
+        void setJailSquareIndex(unsigned int index);
+
+        unsigned int getBoardSize() const;
 }
 
 #endif

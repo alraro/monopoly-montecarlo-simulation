@@ -44,6 +44,7 @@ BoardBuilder &BoardBuilder::addStartSquare() {
 
 BoardBuilder &BoardBuilder::addJailSquare() {
     _board->addSquare(new JailSquare());
+    _board->setJailSquareIndex(_board->getSquares().size() - 1);
     return *this;
 }
 

@@ -24,6 +24,8 @@ class Game {
         Game &setBoard(const Board &board);
         Game &setDefaultBoard();
         Game &clearBoard();
+
+        void runSimulation(unsigned int numTurns);
 };
 
 #endif

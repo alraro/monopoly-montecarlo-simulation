@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "utils.hpp"
 
 // #ifndef GAME_HPP
 // # define GAME_HPP
@@ -107,4 +108,50 @@ Game &Game::setDefaultBoard() {
     delete _board;
     _board = new Board(BoardFactory::createDefaultBoard());
     return *this;
+}
+
+Game &Game::clearBoard() {
+    delete _board;
+    _board = NULL;
+    return *this;
+}
+
+void Game::runSimulation(unsigned int numTurns) {
+    if (_players.empty() || _board == NULL) {
+        if (_players.empty()) {
+            std::cerr << "No players to simulate." << std::endl;
+        }
+        if (_board == NULL) {
+            std::cerr << "No board to simulate." << std::endl;
+        }
+    }
+
+    unsigned int turnsPlayed = 0;
+    while (turnsPlayed < numTurns) {
+        unsigned int diceRoll = rollDice();
+
+        Player *currentPlayer = _players[_currentPlayerIndex];
+        currentPlayer->setCurrentSquare((currentPlayer->getCurrentSquare() + diceRoll) % _board->getBoardSize());
+
+        BaseSquare *currentSquare = _board->getSquare(currentPlayer->getCurrentSquare());
+
+        EffectResult effect = currentSquare->landOn(*currentPlayer);
+        switch (effect.type) {
+            case EffectType::GO_TO_JAIL:
+                currentPlayer->setCurrentSquare(_board->getJailSquareIndex());
+                _board->getSquare(_board->getJailSquareIndex())->landOn(*currentPlayer); // Land on Jail square
+                std::cout << "Player " << currentPlayer->getName() << " is sent to Jail!" << std::endl;
+                break;
+            case EffectType::NONE:
+                // No special effect
+                break;
+            default:
+                std::cerr << "Unknown effect type encountered." << std::endl;
+                break;
+        }
+        std::cout << "Player " << currentPlayer->getName() << " landed on " << currentSquare->getName() << std::endl;
+
+        _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
+        ++turnsPlayed;
+    }
 }
