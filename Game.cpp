@@ -1,36 +1,8 @@
 #include "Game.hpp"
 #include "utils.hpp"
-
-// #ifndef GAME_HPP
-// # define GAME_HPP
-// # include <vector>
-// # include "Board.hpp"
-// # include "Player.hpp"
-
-// class Game {
-//     private:
-//         Board *_board;
-//         std::vector<Player *> _players;
-//         unsigned int _currentPlayerIndex;
-//     public:
-//         Game();
-//         Game(const Game &other);
-//         Game &operator=(const Game &other);
-//         ~Game();
-
-//         Game &clear();
-
-//         Game &addPlayer(const Player &player);
-//         Game &addPlayer(const std::string &name);
-//         Game &clearPlayers();
-
-//         Game &setBoard(const Board &board);
-//         Game &setDefaultBoard();
-//         Game &clearBoard();
-
-// };
-
-// #endif
+#include "BoardFactory.hpp"
+#include "effectType.hpp"
+#include <iostream>
 
 Game::Game(): _board(NULL), _players(), _currentPlayerIndex(0) {}
 
@@ -43,7 +15,7 @@ Game::Game(const Game &other): _board(NULL), _players(), _currentPlayerIndex(oth
     }
 }
 
-Game::&Game::operator=(const Game &other) {
+Game &Game::operator=(const Game &other) {
     if (this != &other) {
         delete _board;
         _board = NULL;
@@ -70,7 +42,7 @@ Game::~Game() {
     }
 }
 
-void Game::clear() {
+Game &Game::clear() {
     delete _board;
     _board = NULL;
     for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
@@ -78,6 +50,7 @@ void Game::clear() {
     }
     _players.clear();
     _currentPlayerIndex = 0;
+    return *this;
 }
 
 Game &Game::addPlayer(const Player &player) {
@@ -128,7 +101,9 @@ void Game::runSimulation(unsigned int numTurns) {
 
     unsigned int turnsPlayed = 0;
     while (turnsPlayed < numTurns) {
-        unsigned int diceRoll = rollDice();
+        std::cout << "Turn " << (turnsPlayed + 1) << ": Player " << _players[_currentPlayerIndex]->getName() << "'s turn." << std::endl;
+        unsigned int diceRoll = rollDice(2, 6); // Roll two six-sided dice
+        std::cout << "Player " << _players[_currentPlayerIndex]->getName() << " rolled a " << diceRoll << std::endl;
 
         Player *currentPlayer = _players[_currentPlayerIndex];
         currentPlayer->setCurrentSquare((currentPlayer->getCurrentSquare() + diceRoll) % _board->getBoardSize());
@@ -137,12 +112,12 @@ void Game::runSimulation(unsigned int numTurns) {
 
         EffectResult effect = currentSquare->landOn(*currentPlayer);
         switch (effect.type) {
-            case EffectType::GO_TO_JAIL:
+            case GO_TO_JAIL:
                 currentPlayer->setCurrentSquare(_board->getJailSquareIndex());
                 _board->getSquare(_board->getJailSquareIndex())->landOn(*currentPlayer); // Land on Jail square
                 std::cout << "Player " << currentPlayer->getName() << " is sent to Jail!" << std::endl;
                 break;
-            case EffectType::NONE:
+            case NONE:
                 // No special effect
                 break;
             default:
@@ -153,5 +128,19 @@ void Game::runSimulation(unsigned int numTurns) {
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
         ++turnsPlayed;
+    }
+    _showSquareLandingInfo();
+}
+
+void Game::_showSquareLandingInfo() {
+    if (_board == NULL) {
+        std::cerr << "No board to show square landing info." << std::endl;
+        return;
+    }
+
+    std::cout << "\n==========Square Landing Info===========\n" << std::endl;
+    for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
+        BaseSquare *square = _board->getSquare(i);
+        std::cout << "Square " << i << " (" << square->getName() << ") was landed on " << square->getTimesLandedOn() << " times." << std::endl;
     }
 }

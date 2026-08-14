@@ -15,3 +15,19 @@ Player &Player::operator=(const Player &other) {
 }
 
 Player::~Player() {}
+
+void Player::setCurrentSquare(unsigned int square) {
+    _currentSquare = square;
+}
+
+unsigned int Player::getCurrentSquare() const {
+    return _currentSquare;
+}
+
+void Player::setName(const std::string &name) {
+    _name = name;
+}
+
+const std::string &Player::getName() const {
+    return _name;
+}

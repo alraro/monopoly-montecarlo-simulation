@@ -16,6 +16,9 @@ class Player {
         void setCurrentSquare(unsigned int square);
         unsigned int getCurrentSquare() const;
 
-}
+        void setName(const std::string &name);
+        const std::string &getName() const;
+
+};
 
 #endif

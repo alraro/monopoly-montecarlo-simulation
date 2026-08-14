@@ -20,7 +20,7 @@ class BoardBuilder {
         BoardBuilder &addLuckSquare();
         BoardBuilder &addCommunitySquare();
 
-        BoardBuilder &addPropertySquare(std::string name);
-}
+        BoardBuilder &addPropertySquare(const std::string &name);
+};
 
 #endif

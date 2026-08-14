@@ -1,4 +1,10 @@
 #include "BoardBuilder.hpp"
+#include "StartSquare.hpp"
+#include "JailSquare.hpp"
+#include "GoToJailSquare.hpp"
+#include "LuckSquare.hpp"
+#include "CommunitySquare.hpp"
+#include "PropertySquare.hpp"
 
 BoardBuilder::BoardBuilder(): _board(new Board()) {}
 
@@ -44,7 +50,7 @@ BoardBuilder &BoardBuilder::addStartSquare() {
 
 BoardBuilder &BoardBuilder::addJailSquare() {
     _board->addSquare(new JailSquare());
-    _board->setJailSquareIndex(_board->getSquares().size() - 1);
+    _board->setJailSquareIndex(_board->getBoardSize() - 1);
     return *this;
 }
 
@@ -63,7 +69,7 @@ BoardBuilder &BoardBuilder::addCommunitySquare() {
     return *this;
 }
 
-BoardBuilder &BoardBuilder::addPropertySquare(std::string name) {
+BoardBuilder &BoardBuilder::addPropertySquare(const std::string &name) {
     _board->addSquare(new PropertySquare(name));
     return *this;
 }

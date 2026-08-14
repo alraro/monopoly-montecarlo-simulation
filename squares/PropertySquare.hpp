@@ -12,7 +12,6 @@ class PropertySquare : public BaseSquare {
         virtual ~PropertySquare();
 
         PropertySquare(std::string name);
-        virtual void landOn(const Player &player);
 
         virtual BaseSquare *clone() const;
 };

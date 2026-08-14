@@ -12,8 +12,6 @@ BaseSquare &BaseSquare::operator=(const BaseSquare &other) {
     return *this;
 }
 
-BaseSquare::~BaseSquare() {}
-
 EffectResult BaseSquare::landOn(const Player &player) {
     ++(this->_timesLandedOn);
     return this->getSquareEffect(player);

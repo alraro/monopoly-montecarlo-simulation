@@ -17,7 +17,7 @@ EffectResult GoToJailSquare::getSquareEffect(const Player &player) const {
     (void)player; // Unused parameter
 
     EffectResult result;
-    result.type = EffectType::GO_TO_JAIL;
+    result.type = GO_TO_JAIL;
     result.value = 0;
     return result;
 }

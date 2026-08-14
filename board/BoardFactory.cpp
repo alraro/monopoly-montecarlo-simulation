@@ -13,10 +13,9 @@ BoardFactory &BoardFactory::operator=(const BoardFactory &other) {
     return *this;
 }
 
-Board &BoardFactory::createDefaultBoard() {
+Board BoardFactory::createDefaultBoard() {
     BoardBuilder builder;
-    return builder.reset()
-        .addStartSquare()
+    return builder.addStartSquare()
         .addJailSquare()
         .addGoToJailSquare()
         .addLuckSquare()

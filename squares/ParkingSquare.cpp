@@ -17,7 +17,7 @@ EffectResult ParkingSquare::getSquareEffect(const Player &player) const {
     (void)player; // Unused parameter
 
     EffectResult result;
-    result.type = EffectType::NONE;
+    result.type = NONE;
     result.value = 0;
     return result;
 }

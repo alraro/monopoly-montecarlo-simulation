@@ -1,6 +1,7 @@
 #ifndef BOARD_HPP
 # define BOARD_HPP
 # include <vector>
+# include "BaseSquare.hpp"
 
 class Board {
     private:
@@ -20,6 +21,6 @@ class Board {
         void setJailSquareIndex(unsigned int index);
 
         unsigned int getBoardSize() const;
-}
+};
 
 #endif
