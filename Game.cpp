@@ -39,6 +39,7 @@ Game &Game::addPlayer(const Player &player) {
 
 Game &Game::addPlayer(const std::string &name) {
     _players.emplace_back(name, 0);
+    return *this;
 }
 
 Game &Game::clearPlayers() {
@@ -78,14 +79,14 @@ EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult di
 
     EffectResult effect = currentSquare->landOn(player);
     switch (effect.type) {
-        case GO_TO_JAIL:
+        case EffectType::GoToJail:
             _sendPlayerToJail(player);
             break;
-        case NONE:
+        case EffectType::None:
             // No special effect
             break;
-        default:
-            std::cerr << "Unknown effect type encountered." << std::endl;
+        case EffectType::Move:
+            // Handle move effect if needed
             break;
     }
     return effect;
@@ -107,7 +108,7 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
     } else {
         EffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
 
-        if (!wasInJail && appliedEffect.type != GO_TO_JAIL) {
+        if (!wasInJail && appliedEffect.type != EffectType::GoToJail) {
             std::cout << "Player " << player.getName() << " rolled doubles and gets another turn!" << std::endl;
             _playPlayerTurn(player);
         }
@@ -117,7 +118,7 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
 void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll) {
     player.resetDoublesRolled();
     EffectResult appliedEffect;
-    appliedEffect.type = NONE;
+    appliedEffect.type = EffectType::None;
     appliedEffect.value = 0;
 
     if (player.isInJail()) {
@@ -125,7 +126,7 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
     } else {
         appliedEffect = _movePlayerDiceRoll(player, diceRoll);
     }
-    if (appliedEffect.type != GO_TO_JAIL) {
+    if (appliedEffect.type != EffectType::GoToJail) {
         player.decrementTurnsLeftInJail();
     }
 }

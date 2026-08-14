@@ -2,13 +2,8 @@
 
 CommunitySquare::CommunitySquare(): BaseSquare("Community", 0) {}
 
-EffectResult CommunitySquare::getSquareEffect(const Player &player) const {
-    (void)player; // Unused parameter
-
-    EffectResult result;
-    result.type = NONE;
-    result.value = 0;
-    return result;
+EffectResult CommunitySquare::getSquareEffect(const Player &) const {
+    return {EffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> CommunitySquare::clone() const {

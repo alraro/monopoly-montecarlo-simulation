@@ -4,13 +4,8 @@ PropertySquare::PropertySquare(): BaseSquare("", 0) {}
 
 PropertySquare::PropertySquare(std::string name): BaseSquare(name, 0) {}
 
-EffectResult PropertySquare::getSquareEffect(const Player &player) const {
-    (void)player; // Unused parameter
-
-    EffectResult result;
-    result.type = NONE;
-    result.value = 0;
-    return result;
+EffectResult PropertySquare::getSquareEffect(const Player &) const {
+    return {EffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> PropertySquare::clone() const {

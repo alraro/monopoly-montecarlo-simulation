@@ -2,13 +2,8 @@
 
 ParkingSquare::ParkingSquare(): BaseSquare("Parking", 0) {}
 
-EffectResult ParkingSquare::getSquareEffect(const Player &player) const {
-    (void)player; // Unused parameter
-
-    EffectResult result;
-    result.type = NONE;
-    result.value = 0;
-    return result;
+EffectResult ParkingSquare::getSquareEffect(const Player &) const {
+    return {EffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> ParkingSquare::clone() const {

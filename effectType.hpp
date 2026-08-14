@@ -1,15 +1,15 @@
 #ifndef EFFECTTYPE_HPP
 # define EFFECTTYPE_HPP
 
-enum EffectType {
-    NONE,
-    MOVE,
-    GO_TO_JAIL,
+enum class EffectType {
+    None,
+    Move,
+    GoToJail,
 };
 
 struct EffectResult {
-    EffectType type;
-    int value;
+    EffectType type = EffectType::None;
+    int value = 0;
 };
 
 #endif

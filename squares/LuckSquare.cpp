@@ -2,13 +2,8 @@
 
 LuckSquare::LuckSquare(): BaseSquare("Luck", 0) {}
 
-EffectResult LuckSquare::getSquareEffect(const Player &player) const {
-    (void)player; // Unused parameter
-
-    EffectResult result;
-    result.type = NONE;
-    result.value = 0;
-    return result;
+EffectResult LuckSquare::getSquareEffect(const Player &) const {
+    return {EffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> LuckSquare::clone() const {
