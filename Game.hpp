@@ -5,10 +5,11 @@
 # include "Player.hpp"
 # include "effectType.hpp"
 # include "utils.hpp"
+# include <memory>
 
 class Game {
     private:
-        Board *_board;
+        std::unique_ptr<Board> _board;
         std::vector<Player *> _players;
         unsigned int _currentPlayerIndex;
 
@@ -36,7 +37,7 @@ class Game {
         Game &addPlayer(const std::string &name);
         Game &clearPlayers();
 
-        Game &setBoard(const Board &board);
+        Game &setBoard(std::unique_ptr<Board> board);
         Game &setDefaultBoard();
         Game &clearBoard();
 

@@ -15,8 +15,10 @@ BoardBuilder &BoardBuilder::reset() {
     return *this;
 }
 
-const Board &BoardBuilder::getBoard() const {
-    return *_board;
+std::unique_ptr<Board> BoardBuilder::build() {
+    std::unique_ptr<Board> builtBoard = std::move(_board);
+    _board = std::make_unique<Board>();
+    return builtBoard;
 }
 
 BoardBuilder &BoardBuilder::addStartSquare() {

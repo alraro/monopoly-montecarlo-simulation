@@ -9,7 +9,7 @@ class BoardFactory {
         BoardFactory(const BoardFactory &other);
         BoardFactory &operator=(const BoardFactory &other);
     public:
-        static Board createDefaultBoard();
+        static std::unique_ptr<Board> createDefaultBoard();
 };
 
 #endif

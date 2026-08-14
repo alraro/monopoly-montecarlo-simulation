@@ -8,7 +8,7 @@ Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _timesJailed(
 
 Game::Game(const Game &other): _board(nullptr), _players(), _currentPlayerIndex(other._currentPlayerIndex), _timesJailed(other._timesJailed), _turnsSpentInJail(other._turnsSpentInJail) {
     if (other._board != nullptr) {
-        this->_board = new Board(*other._board);
+        this->_board = std::make_unique<Board>(*other._board);
     }
     for (std::vector<Player *>::const_iterator it = other._players.begin(); it != other._players.end(); ++it) {
         this->_players.push_back(new Player(**it));
@@ -17,7 +17,6 @@ Game::Game(const Game &other): _board(nullptr), _players(), _currentPlayerIndex(
 
 Game &Game::operator=(const Game &other) {
     if (this != &other) {
-        delete _board;
         _board = nullptr;
         for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
             delete *it;
@@ -28,7 +27,7 @@ Game &Game::operator=(const Game &other) {
         _turnsSpentInJail = other._turnsSpentInJail;
 
         if (other._board != nullptr) {
-            this->_board = new Board(*other._board);
+            this->_board = std::make_unique<Board>(*other._board);
         }
         for (std::vector<Player *>::const_iterator it = other._players.begin(); it != other._players.end(); ++it) {
             this->_players.push_back(new Player(**it));
@@ -38,20 +37,14 @@ Game &Game::operator=(const Game &other) {
 }
 
 Game::~Game() {
-    delete _board;
     for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
         delete *it;
     }
 }
 
 Game &Game::clear() {
-    delete _board;
-    _board = nullptr;
-    for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
-        delete *it;
-    }
-    _players.clear();
-    _currentPlayerIndex = 0;
+    clearBoard();
+    clearPlayers();
     _timesJailed = 0;
     _turnsSpentInJail = 0;
     return *this;
@@ -75,20 +68,17 @@ Game &Game::clearPlayers() {
     return *this;
 }
 
-Game &Game::setBoard(const Board &board) {
-    delete _board;
-    _board = new Board(board);
+Game &Game::setBoard(std::unique_ptr<Board> board) {
+    _board = std::move(board);
     return *this;
 }
 
 Game &Game::setDefaultBoard() {
-    delete _board;
-    _board = new Board(BoardFactory::createDefaultBoard());
+    _board = BoardFactory::createDefaultBoard();
     return *this;
 }
 
 Game &Game::clearBoard() {
-    delete _board;
     _board = nullptr;
     return *this;
 }

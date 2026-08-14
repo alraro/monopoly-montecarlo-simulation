@@ -1,6 +1,7 @@
 #ifndef BOARDBUILDER_HPP
 # define BOARDBUILDER_HPP
 # include "Board.hpp"
+# include <memory>
 
 class BoardBuilder {
     private:
@@ -13,7 +14,7 @@ class BoardBuilder {
         BoardBuilder &operator=(BoardBuilder &&other) noexcept = default;
 
         BoardBuilder &reset();
-        const Board &getBoard() const;
+        std::unique_ptr<Board> build();
 
         BoardBuilder &addStartSquare();
         BoardBuilder &addJailSquare();

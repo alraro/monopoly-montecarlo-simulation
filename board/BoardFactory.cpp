@@ -13,7 +13,7 @@ BoardFactory &BoardFactory::operator=(const BoardFactory &other) {
     return *this;
 }
 
-Board BoardFactory::createDefaultBoard() {
+std::unique_ptr<Board> BoardFactory::createDefaultBoard() {
     BoardBuilder builder;
     return builder.addStartSquare()
         .addPropertySquare("Ronda de Valencia")
@@ -55,5 +55,5 @@ Board BoardFactory::createDefaultBoard() {
         .addPropertySquare("PASEO DE LA CASTELLANA")
         .addPropertySquare("TASA DE LUJO")
         .addPropertySquare("PASEO DEL PRADO")
-        .getBoard();
+        .build();
 }
