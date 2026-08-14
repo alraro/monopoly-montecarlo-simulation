@@ -10,11 +10,16 @@ unsigned int rollGeneralDice(unsigned int numDice, unsigned int sidesPerDie) {
     if (sidesPerDie == 0)
         return 0;
 
+    const unsigned int range = static_cast<unsigned int>(RAND_MAX) + 1u;
+    const unsigned int limit = range - (range % sidesPerDie);
+
     unsigned int total = 0;
     for (unsigned int i = 0; i < numDice; ++i) {
-        // En C++98: (rand() % LADOS) genera un rango de [0 a LADOS-1].
-        // Le sumamos 1 para que sea de [1 a LADOS].
-        total += (std::rand() % sidesPerDie) + 1;
+        unsigned int roll;
+        do {
+            roll = static_cast<unsigned int>(std::rand());
+        } while (roll >= limit);
+        total += (roll % sidesPerDie) + 1;
     }
     return total;
 }

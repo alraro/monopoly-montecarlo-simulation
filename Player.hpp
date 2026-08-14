@@ -24,7 +24,8 @@ class Player {
         void setTurnsLeftInJail(int turns);
         void decrementTurnsLeftInJail();
         int getTurnsLeftInJail() const;
-        void getJailed();
+        void startTurnsLeftInJailCountdown();
+        void resetTurnsLeftInJail();
 
         void incrementDoublesRolled();
         void resetDoublesRolled();

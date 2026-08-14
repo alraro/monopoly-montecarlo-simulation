@@ -49,8 +49,12 @@ void Player::decrementTurnsLeftInJail() {
     }
 }
 
-void Player::getJailed() {
+void Player::startTurnsLeftInJailCountdown() {
     _turnsLeftInJail = TURNS_IN_JAIL;
+}
+
+void Player::resetTurnsLeftInJail() {
+    _turnsLeftInJail = 0;
 }
 
 void Player::incrementDoublesRolled() {

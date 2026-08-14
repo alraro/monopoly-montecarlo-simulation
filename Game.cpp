@@ -92,7 +92,8 @@ Game &Game::clearBoard() {
 void Game::_sendPlayerToJail(Player &player) {
     player.setCurrentSquare(_board->getJailSquareIndex());
     _board->getSquare(_board->getJailSquareIndex())->landOn(player);
-    player.getJailed();
+    player.startTurnsLeftInJailCountdown();
+    player.resetDoublesRolled();
     std::cout << "Player " << player.getName() << " is sent to Jail!" << std::endl;
 }
 
@@ -122,15 +123,14 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
 
     if (player.isInJail()) {
         std::cout << "Player " << player.getName() << " is in Jail and rolled doubles to get out!" << std::endl;
-        player.setTurnsLeftInJail(0);
+        player.resetTurnsLeftInJail();
+    } else {
+        player.incrementDoublesRolled();
     }
-
-    player.incrementDoublesRolled();
 
     if (player.getDoublesRolledInARow() >= 3) {
         std::cout << "Player " << player.getName() << " rolled doubles three times in a row and is sent to Jail!" << std::endl;
         _sendPlayerToJail(player);
-        player.resetDoublesRolled();
     } else {
         EffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
 
@@ -178,6 +178,7 @@ void Game::runSimulation(unsigned int numTurns) {
         if (_board == NULL) {
             std::cerr << "No board to simulate." << std::endl;
         }
+        return ;
     }
 
     unsigned int turnsPlayed = 0;
