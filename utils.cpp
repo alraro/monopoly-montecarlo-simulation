@@ -6,7 +6,7 @@ void initRandom() {
     std::srand(static_cast<unsigned int>(std::time(NULL)));
 }
 
-unsigned int rollDice(unsigned int numDice, unsigned int sidesPerDie) {
+unsigned int rollGeneralDice(unsigned int numDice, unsigned int sidesPerDie) {
     if (sidesPerDie == 0)
         return 0;
 
@@ -17,4 +17,13 @@ unsigned int rollDice(unsigned int numDice, unsigned int sidesPerDie) {
         total += (std::rand() % sidesPerDie) + 1;
     }
     return total;
+}
+
+MonopolyDiceRollResult rollMonopolyDice() {
+    MonopolyDiceRollResult result;
+    result.die1 = rollGeneralDice(1, 6);
+    result.die2 = rollGeneralDice(1, 6);
+    result.total = result.die1 + result.die2;
+    result.doubles = result.die1 == result.die2;
+    return result;
 }

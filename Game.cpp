@@ -89,6 +89,85 @@ Game &Game::clearBoard() {
     return *this;
 }
 
+void Game::_sendPlayerToJail(Player &player) {
+    player.setCurrentSquare(_board->getJailSquareIndex());
+    _board->getSquare(_board->getJailSquareIndex())->landOn(player);
+    player.getJailed();
+    std::cout << "Player " << player.getName() << " is sent to Jail!" << std::endl;
+}
+
+EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
+    player.setCurrentSquare((player.getCurrentSquare() + diceRoll.total) % _board->getBoardSize());
+    BaseSquare *currentSquare = _board->getSquare(player.getCurrentSquare());
+
+    std::cout << "Player " << player.getName() << " landed on square " << player.getCurrentSquare() << " (" << currentSquare->getName() << ")." << std::endl;
+
+    EffectResult effect = currentSquare->landOn(player);
+    switch (effect.type) {
+        case GO_TO_JAIL:
+            _sendPlayerToJail(player);
+            break;
+        case NONE:
+            // No special effect
+            break;
+        default:
+            std::cerr << "Unknown effect type encountered." << std::endl;
+            break;
+    }
+    return effect;
+}
+
+void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRoll) {
+    bool wasInJail = player.isInJail();
+
+    if (player.isInJail()) {
+        std::cout << "Player " << player.getName() << " is in Jail and rolled doubles to get out!" << std::endl;
+        player.setTurnsLeftInJail(0);
+    }
+
+    player.incrementDoublesRolled();
+
+    if (player.getDoublesRolledInARow() >= 3) {
+        std::cout << "Player " << player.getName() << " rolled doubles three times in a row and is sent to Jail!" << std::endl;
+        _sendPlayerToJail(player);
+        player.resetDoublesRolled();
+    } else {
+        EffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
+
+        if (!wasInJail && appliedEffect.type != GO_TO_JAIL) {
+            std::cout << "Player " << player.getName() << " rolled doubles and gets another turn!" << std::endl;
+            _playPlayerTurn(player);
+        }
+    }
+}
+
+void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll) {
+    player.resetDoublesRolled();
+    EffectResult appliedEffect = NONE;
+
+    if (player.isInJail()) {
+        std::cout << "Player " << player.getName() << " is in Jail and did not roll doubles." << std::endl;
+    } else {
+        appliedEffect = _movePlayerDiceRoll(player, diceRoll);
+    }
+    if (appliedEffect.type != GO_TO_JAIL) {
+        player.decrementTurnsLeftInJail();
+    }
+}
+
+void Game::_playPlayerTurn(Player &player) {
+    std::cout << "Turn " << (turnsPlayed + 1) << ": Player " << player.getName() << "'s turn." << std::endl;
+
+    MonopolyDiceRollResult diceRoll = rollMonopolyDice();
+    std::cout << "Player " << player.getName() << " rolled a " << diceRoll.total << " (" << diceRoll.die1 << " + " << diceRoll.die2 << ") || " << (diceRoll.doubles ? "DOUBLES!" : "No Doubles") << std::endl;
+
+    if (diceRoll.doubles) {
+        _playPlayerTurnDoubles(player, diceRoll);
+    } else {
+        _playPlayerTurnNoDoubles(player, diceRoll);
+    }
+}
+
 void Game::runSimulation(unsigned int numTurns) {
     if (_players.empty() || _board == NULL) {
         if (_players.empty()) {
@@ -101,30 +180,8 @@ void Game::runSimulation(unsigned int numTurns) {
 
     unsigned int turnsPlayed = 0;
     while (turnsPlayed < numTurns) {
-        std::cout << "Turn " << (turnsPlayed + 1) << ": Player " << _players[_currentPlayerIndex]->getName() << "'s turn." << std::endl;
-        unsigned int diceRoll = rollDice(2, 6); // Roll two six-sided dice
-        std::cout << "Player " << _players[_currentPlayerIndex]->getName() << " rolled a " << diceRoll << std::endl;
-
         Player *currentPlayer = _players[_currentPlayerIndex];
-        currentPlayer->setCurrentSquare((currentPlayer->getCurrentSquare() + diceRoll) % _board->getBoardSize());
-
-        BaseSquare *currentSquare = _board->getSquare(currentPlayer->getCurrentSquare());
-
-        EffectResult effect = currentSquare->landOn(*currentPlayer);
-        switch (effect.type) {
-            case GO_TO_JAIL:
-                currentPlayer->setCurrentSquare(_board->getJailSquareIndex());
-                _board->getSquare(_board->getJailSquareIndex())->landOn(*currentPlayer); // Land on Jail square
-                std::cout << "Player " << currentPlayer->getName() << " is sent to Jail!" << std::endl;
-                break;
-            case NONE:
-                // No special effect
-                break;
-            default:
-                std::cerr << "Unknown effect type encountered." << std::endl;
-                break;
-        }
-        std::cout << "Player " << currentPlayer->getName() << " landed on " << currentSquare->getName() << std::endl;
+        _playPlayerTurn(currentPlayer);
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
         ++turnsPlayed;
