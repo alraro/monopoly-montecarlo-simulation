@@ -3,14 +3,16 @@
 #include <iostream>
 
 int main() {
-    std::cout << "Random seed: " << initRandom(12345) << std::endl;
+    constexpr unsigned int TURNS = 10000;
+    constexpr unsigned int SEED = 12345;
+    std::cout << "Random seed: " << initRandom(SEED) << std::endl;
 
     Game game;
 
     game.setDefaultBoard()
         .addPlayer("Alice")
         .addPlayer("Bob")
-        .runSimulation(10000);
+        .runSimulation(TURNS);
 
     return 0;
 }

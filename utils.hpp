@@ -1,6 +1,5 @@
 #ifndef UTILS_HPP
 # define UTILS_HPP
-# define TURNS_IN_JAIL 3
 
 struct MonopolyDiceRollResult {
     unsigned int die1;

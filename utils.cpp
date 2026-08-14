@@ -1,4 +1,5 @@
 #include "utils.hpp"
+#include "rules.hpp"
 #include <random>
 
 namespace {
@@ -33,8 +34,8 @@ unsigned int rollGeneralDice(unsigned int numDice, unsigned int sidesPerDie) {
 
 MonopolyDiceRollResult rollMonopolyDice() {
     MonopolyDiceRollResult result;
-    result.die1 = rollGeneralDice(1, 6);
-    result.die2 = rollGeneralDice(1, 6);
+    result.die1 = rollGeneralDice(1, rules::DICE_SIDES);
+    result.die2 = rollGeneralDice(1, rules::DICE_SIDES);
     result.total = result.die1 + result.die2;
     result.doubles = result.die1 == result.die2;
     return result;

@@ -3,6 +3,7 @@
 #include "BoardFactory.hpp"
 #include "effectType.hpp"
 #include <iostream>
+#include "rules.hpp"
 
 Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
 
@@ -102,7 +103,7 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
         player.incrementDoublesRolled();
     }
 
-    if (player.getDoublesRolledInARow() >= 3) {
+    if (player.getDoublesRolledInARow() >= rules::DOUBLES_TO_JAIL) {
         std::cout << "Player " << player.getName() << " rolled doubles three times in a row and is sent to Jail!" << std::endl;
         _sendPlayerToJail(player);
     } else {

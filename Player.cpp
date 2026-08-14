@@ -1,5 +1,5 @@
 #include "Player.hpp"
-#include "utils.hpp"
+#include "rules.hpp"
 
 Player::Player(): _name("Anonymous player"), _currentSquare(0), _turnsLeftInJail(0), _doublesRolledInARow(0) {}
 
@@ -44,7 +44,7 @@ void Player::decrementTurnsLeftInJail() {
 }
 
 void Player::startTurnsLeftInJailCountdown() {
-    _turnsLeftInJail = TURNS_IN_JAIL;
+    _turnsLeftInJail = rules::TURNS_IN_JAIL;
 }
 
 void Player::resetTurnsLeftInJail() {
