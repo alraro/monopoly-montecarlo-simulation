@@ -4,10 +4,10 @@
 #include "effectType.hpp"
 #include <iostream>
 
-Game::Game(): _board(NULL), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
+Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
 
-Game::Game(const Game &other): _board(NULL), _players(), _currentPlayerIndex(other._currentPlayerIndex), _timesJailed(other._timesJailed), _turnsSpentInJail(other._turnsSpentInJail) {
-    if (other._board != NULL) {
+Game::Game(const Game &other): _board(nullptr), _players(), _currentPlayerIndex(other._currentPlayerIndex), _timesJailed(other._timesJailed), _turnsSpentInJail(other._turnsSpentInJail) {
+    if (other._board != nullptr) {
         this->_board = new Board(*other._board);
     }
     for (std::vector<Player *>::const_iterator it = other._players.begin(); it != other._players.end(); ++it) {
@@ -18,7 +18,7 @@ Game::Game(const Game &other): _board(NULL), _players(), _currentPlayerIndex(oth
 Game &Game::operator=(const Game &other) {
     if (this != &other) {
         delete _board;
-        _board = NULL;
+        _board = nullptr;
         for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
             delete *it;
         }
@@ -27,7 +27,7 @@ Game &Game::operator=(const Game &other) {
         _timesJailed = other._timesJailed;
         _turnsSpentInJail = other._turnsSpentInJail;
 
-        if (other._board != NULL) {
+        if (other._board != nullptr) {
             this->_board = new Board(*other._board);
         }
         for (std::vector<Player *>::const_iterator it = other._players.begin(); it != other._players.end(); ++it) {
@@ -46,7 +46,7 @@ Game::~Game() {
 
 Game &Game::clear() {
     delete _board;
-    _board = NULL;
+    _board = nullptr;
     for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
         delete *it;
     }
@@ -89,7 +89,7 @@ Game &Game::setDefaultBoard() {
 
 Game &Game::clearBoard() {
     delete _board;
-    _board = NULL;
+    _board = nullptr;
     return *this;
 }
 
@@ -179,11 +179,11 @@ void Game::_playPlayerTurn(Player &player) {
 }
 
 void Game::runSimulation(unsigned int numTurns) {
-    if (_players.empty() || _board == NULL) {
+    if (_players.empty() || _board == nullptr) {
         if (_players.empty()) {
             std::cerr << "No players to simulate." << std::endl;
         }
-        if (_board == NULL) {
+        if (_board == nullptr) {
             std::cerr << "No board to simulate." << std::endl;
         }
         return ;
@@ -205,7 +205,7 @@ void Game::runSimulation(unsigned int numTurns) {
 }
 
 void Game::_showSquareLandingInfo() {
-    if (_board == NULL) {
+    if (_board == nullptr) {
         std::cerr << "No board to show square landing info." << std::endl;
         return;
     }

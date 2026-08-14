@@ -2,17 +2,6 @@
 
 StartSquare::StartSquare(): BaseSquare("Start", 0) {}
 
-StartSquare::StartSquare(const StartSquare &other): BaseSquare(other) {}
-
-StartSquare &StartSquare::operator=(const StartSquare &other) {
-    if (this != &other) {
-        BaseSquare::operator=(other);
-    }
-    return *this;
-}
-
-StartSquare::~StartSquare() {}
-
 EffectResult StartSquare::getSquareEffect(const Player &player) const {
     (void)player; // Unused parameter
 

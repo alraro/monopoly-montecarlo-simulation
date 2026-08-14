@@ -4,14 +4,11 @@
 
 class JailSquare : public BaseSquare {
     protected:
-        virtual EffectResult getSquareEffect(const Player &player) const;
+        EffectResult getSquareEffect(const Player &player) const override;
     public:
         JailSquare();
-        JailSquare(const JailSquare &other);
-        JailSquare &operator=(const JailSquare &other);
-        virtual ~JailSquare();
-    
-        virtual BaseSquare *clone() const;
+
+        BaseSquare *clone() const override;
 };
 
 #endif

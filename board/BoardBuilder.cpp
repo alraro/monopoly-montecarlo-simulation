@@ -10,10 +10,10 @@
 BoardBuilder::BoardBuilder(): _board(new Board()) {}
 
 BoardBuilder::BoardBuilder(const BoardBuilder &other) {
-    if (other._board != NULL) {
+    if (other._board != nullptr) {
         this->_board = new Board(*other._board);
     } else {
-        this->_board = NULL;
+        this->_board = nullptr;
     }
 }
 
@@ -21,10 +21,10 @@ BoardBuilder &BoardBuilder::operator=(const BoardBuilder &other) {
     if (this != &other) {
         delete _board;
 
-        if (other._board != NULL) {
+        if (other._board != nullptr) {
             this->_board = new Board(*other._board);
         } else {
-            this->_board = NULL;
+            this->_board = nullptr;
         }
     }
     return *this;

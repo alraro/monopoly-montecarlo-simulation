@@ -17,8 +17,6 @@ Player &Player::operator=(const Player &other) {
     return *this;
 }
 
-Player::~Player() {}
-
 void Player::setCurrentSquare(unsigned int square) {
     _currentSquare = square;
 }

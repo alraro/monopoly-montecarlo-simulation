@@ -4,16 +4,13 @@
 
 class PropertySquare : public BaseSquare {
     protected:
-        virtual EffectResult getSquareEffect(const Player &player) const;
+        EffectResult getSquareEffect(const Player &player) const override;
     public:
         PropertySquare();
-        PropertySquare(const PropertySquare &other);
-        PropertySquare &operator=(const PropertySquare &other);
-        virtual ~PropertySquare();
 
         PropertySquare(std::string name);
 
-        virtual BaseSquare *clone() const;
+        BaseSquare *clone() const override;
 };
 
 #endif

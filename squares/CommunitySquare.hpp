@@ -4,14 +4,11 @@
 
 class CommunitySquare : public BaseSquare {
     protected:
-        virtual EffectResult getSquareEffect(const Player &player) const;
+        EffectResult getSquareEffect(const Player &player) const override;
     public:
         CommunitySquare();
-        CommunitySquare(const CommunitySquare &other);
-        CommunitySquare &operator=(const CommunitySquare &other);
-        virtual ~CommunitySquare();
 
-        virtual BaseSquare *clone() const;
+        BaseSquare *clone() const override;
 };
 
 #endif

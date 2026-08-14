@@ -4,14 +4,11 @@
 
 class LuckSquare : public BaseSquare {
     protected:
-        virtual EffectResult getSquareEffect(const Player &player) const;
+        EffectResult getSquareEffect(const Player &player) const override;
     public:
         LuckSquare();
-        LuckSquare(const LuckSquare &other);
-        LuckSquare &operator=(const LuckSquare &other);
-        virtual ~LuckSquare();
 
-        virtual BaseSquare *clone() const;
+        BaseSquare *clone() const override;
 };
 
 #endif

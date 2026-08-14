@@ -30,7 +30,7 @@ Board &Board::operator=(const Board &other) {
 }
 
 void Board::addSquare(BaseSquare *square) {
-    if (square != NULL) {
+    if (square != nullptr) {
         this->_squares.push_back(square);
     }
 }
@@ -45,7 +45,7 @@ BaseSquare *Board::getSquare(unsigned int index) const {
     if (index < _squares.size()) {
         return _squares[index];
     } else {
-        return NULL;
+        return nullptr;
     }
 }
 

@@ -17,7 +17,7 @@ class BaseSquare {
 
         virtual EffectResult getSquareEffect(const Player &player) const = 0;
     public:
-        virtual ~BaseSquare() {};
+        virtual ~BaseSquare() = default;
         EffectResult landOn(const Player &player);
 
         int getTimesLandedOn() const;

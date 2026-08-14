@@ -9,7 +9,7 @@ unsigned int initRandom(unsigned int seed) {
 }
 
 unsigned int initRandom() {
-    unsigned int seed = static_cast<unsigned int>(std::time(NULL));
+    unsigned int seed = static_cast<unsigned int>(std::time(nullptr));
     seed ^= static_cast<unsigned int>(getpid()) << 16;
     return initRandom(seed);
 }
