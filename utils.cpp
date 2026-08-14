@@ -1,33 +1,32 @@
 #include "utils.hpp"
-#include <cstdlib>
-#include <ctime>
-#include <unistd.h>
+#include <random>
+
+namespace {
+    std::mt19937 &generator() {
+        static std::mt19937 gen;
+        return gen;
+    }
+}
 
 unsigned int initRandom(unsigned int seed) {
-    std::srand(seed);
+    generator().seed(seed);
     return seed;
 }
 
 unsigned int initRandom() {
-    unsigned int seed = static_cast<unsigned int>(std::time(nullptr));
-    seed ^= static_cast<unsigned int>(getpid()) << 16;
-    return initRandom(seed);
+    std::random_device rd;
+    return initRandom(rd());
 }
 
 unsigned int rollGeneralDice(unsigned int numDice, unsigned int sidesPerDie) {
     if (sidesPerDie == 0)
         return 0;
 
-    const unsigned int range = static_cast<unsigned int>(RAND_MAX) + 1u;
-    const unsigned int limit = range - (range % sidesPerDie);
+    std::uniform_int_distribution<unsigned int> die(1, sidesPerDie);
 
     unsigned int total = 0;
     for (unsigned int i = 0; i < numDice; ++i) {
-        unsigned int roll;
-        do {
-            roll = static_cast<unsigned int>(std::rand());
-        } while (roll >= limit);
-        total += (roll % sidesPerDie) + 1;
+        total += die(generator());
     }
     return total;
 }
