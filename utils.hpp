@@ -9,12 +9,11 @@ struct MonopolyDiceRollResult {
     bool doubles;
 };
 
-void         initRandom();
+unsigned int initRandom();
+unsigned int initRandom(unsigned int seed);
 
 unsigned int rollGeneralDice(unsigned int numDice, unsigned int sidesPerDie);
 
 MonopolyDiceRollResult rollMonopolyDice();
-
-bool rollForOutOfJailMonopoly();
 
 #endif

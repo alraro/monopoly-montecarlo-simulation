@@ -1,12 +1,16 @@
 #include "Game.hpp"
 #include "utils.hpp"
+#include <iostream>
 
 int main() {
-    initRandom();
+    std::cout << "Random seed: " << initRandom() << std::endl;
+
     Game game;
 
     game.setDefaultBoard()
         .addPlayer("Alice")
         .addPlayer("Bob")
-        .runSimulation(10000);
+        .runSimulation(1000000);
+
+    return 0;
 }

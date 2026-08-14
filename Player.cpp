@@ -35,10 +35,6 @@ const std::string &Player::getName() const {
     return _name;
 }
 
-void Player::setTurnsLeftInJail(int turns) {
-    _turnsLeftInJail = turns;
-}
-
 int Player::getTurnsLeftInJail() const {
     return _turnsLeftInJail;
 }

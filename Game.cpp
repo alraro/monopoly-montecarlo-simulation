@@ -4,9 +4,9 @@
 #include "effectType.hpp"
 #include <iostream>
 
-Game::Game(): _board(NULL), _players(), _currentPlayerIndex(0) {}
+Game::Game(): _board(NULL), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
 
-Game::Game(const Game &other): _board(NULL), _players(), _currentPlayerIndex(other._currentPlayerIndex) {
+Game::Game(const Game &other): _board(NULL), _players(), _currentPlayerIndex(other._currentPlayerIndex), _timesJailed(other._timesJailed), _turnsSpentInJail(other._turnsSpentInJail) {
     if (other._board != NULL) {
         this->_board = new Board(*other._board);
     }
@@ -24,6 +24,8 @@ Game &Game::operator=(const Game &other) {
         }
         _players.clear();
         _currentPlayerIndex = other._currentPlayerIndex;
+        _timesJailed = other._timesJailed;
+        _turnsSpentInJail = other._turnsSpentInJail;
 
         if (other._board != NULL) {
             this->_board = new Board(*other._board);
@@ -50,6 +52,8 @@ Game &Game::clear() {
     }
     _players.clear();
     _currentPlayerIndex = 0;
+    _timesJailed = 0;
+    _turnsSpentInJail = 0;
     return *this;
 }
 
@@ -91,9 +95,9 @@ Game &Game::clearBoard() {
 
 void Game::_sendPlayerToJail(Player &player) {
     player.setCurrentSquare(_board->getJailSquareIndex());
-    _board->getSquare(_board->getJailSquareIndex())->landOn(player);
     player.startTurnsLeftInJailCountdown();
     player.resetDoublesRolled();
+    ++_timesJailed;
     std::cout << "Player " << player.getName() << " is sent to Jail!" << std::endl;
 }
 
@@ -158,6 +162,10 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
 }
 
 void Game::_playPlayerTurn(Player &player) {
+    if (player.isInJail()) {
+        ++_turnsSpentInJail;
+    }
+
     std::cout << "Player " << player.getName() << "'s turn." << std::endl;
 
     MonopolyDiceRollResult diceRoll = rollMonopolyDice();
@@ -202,9 +210,21 @@ void Game::_showSquareLandingInfo() {
         return;
     }
 
+    unsigned int totalLandings = 0;
+
     std::cout << "\n==========Square Landing Info===========\n" << std::endl;
     for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
         BaseSquare *square = _board->getSquare(i);
         std::cout << "Square " << i << " (" << square->getName() << ") was landed on " << square->getTimesLandedOn() << " times." << std::endl;
+        totalLandings += square->getTimesLandedOn();
+    }
+
+    std::cout << "\n==========Jail Info===========\n" << std::endl;
+    std::cout << "Total landings: " << totalLandings << std::endl;
+    std::cout << "Times jailed: " << _timesJailed << std::endl;
+    std::cout << "Turns spent in jail: " << _turnsSpentInJail << std::endl;
+    if (_timesJailed > 0) {
+        std::cout << "Average turns per jailing: "
+                  << static_cast<double>(_turnsSpentInJail) / _timesJailed << std::endl;
     }
 }

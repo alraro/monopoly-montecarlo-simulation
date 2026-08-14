@@ -1,9 +1,17 @@
 #include "utils.hpp"
-#include <cstdlib> // Para rand() y srand()
-#include <ctime>   // Para time()
+#include <cstdlib>
+#include <ctime>
+#include <unistd.h>
 
-void initRandom() {
-    std::srand(static_cast<unsigned int>(std::time(NULL)));
+unsigned int initRandom(unsigned int seed) {
+    std::srand(seed);
+    return seed;
+}
+
+unsigned int initRandom() {
+    unsigned int seed = static_cast<unsigned int>(std::time(NULL));
+    seed ^= static_cast<unsigned int>(getpid()) << 16;
+    return initRandom(seed);
 }
 
 unsigned int rollGeneralDice(unsigned int numDice, unsigned int sidesPerDie) {

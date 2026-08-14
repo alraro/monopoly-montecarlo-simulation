@@ -21,7 +21,6 @@ class Player {
         void setName(const std::string &name);
         const std::string &getName() const;
 
-        void setTurnsLeftInJail(int turns);
         void decrementTurnsLeftInJail();
         int getTurnsLeftInJail() const;
         void startTurnsLeftInJailCountdown();

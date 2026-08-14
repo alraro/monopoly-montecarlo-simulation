@@ -11,6 +11,10 @@ class Game {
         Board *_board;
         std::vector<Player *> _players;
         unsigned int _currentPlayerIndex;
+
+        unsigned int _timesJailed;
+        unsigned int _turnsSpentInJail;
+
         void _showSquareLandingInfo();
         void _sendPlayerToJail(Player &player);
 
