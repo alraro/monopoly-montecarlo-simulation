@@ -6,40 +6,22 @@
 
 Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
 
-Game::Game(const Game &other): _board(nullptr), _players(), _currentPlayerIndex(other._currentPlayerIndex), _timesJailed(other._timesJailed), _turnsSpentInJail(other._turnsSpentInJail) {
-    if (other._board != nullptr) {
-        this->_board = std::make_unique<Board>(*other._board);
-    }
-    for (std::vector<Player *>::const_iterator it = other._players.begin(); it != other._players.end(); ++it) {
-        this->_players.push_back(new Player(**it));
-    }
-}
+Game::Game(const Game &other)
+    : _board(other._board ? std::make_unique<Board>(*other._board) : nullptr),
+    _players(other._players), 
+    _currentPlayerIndex(other._currentPlayerIndex), 
+    _timesJailed(other._timesJailed), 
+    _turnsSpentInJail(other._turnsSpentInJail) {}
 
 Game &Game::operator=(const Game &other) {
     if (this != &other) {
-        _board = nullptr;
-        for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
-            delete *it;
-        }
-        _players.clear();
+        _board = other._board ? std::make_unique<Board>(*other._board) : nullptr;
+        _players = other._players;
         _currentPlayerIndex = other._currentPlayerIndex;
         _timesJailed = other._timesJailed;
         _turnsSpentInJail = other._turnsSpentInJail;
-
-        if (other._board != nullptr) {
-            this->_board = std::make_unique<Board>(*other._board);
-        }
-        for (std::vector<Player *>::const_iterator it = other._players.begin(); it != other._players.end(); ++it) {
-            this->_players.push_back(new Player(**it));
-        }
     }
     return *this;
-}
-
-Game::~Game() {
-    for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
-        delete *it;
-    }
 }
 
 Game &Game::clear() {
@@ -51,18 +33,15 @@ Game &Game::clear() {
 }
 
 Game &Game::addPlayer(const Player &player) {
-    _players.push_back(new Player(player));
+    _players.push_back(player);
     return *this;
 }
 
 Game &Game::addPlayer(const std::string &name) {
-    return Game::addPlayer(Player(name, 0));
+    _players.emplace_back(name, 0);
 }
 
 Game &Game::clearPlayers() {
-    for (std::vector<Player *>::iterator it = _players.begin(); it != _players.end(); ++it) {
-        delete *it;
-    }
     _players.clear();
     _currentPlayerIndex = 0;
     return *this;
@@ -179,22 +158,20 @@ void Game::runSimulation(unsigned int numTurns) {
         return ;
     }
 
-    unsigned int turnsPlayed = 0;
-    while (turnsPlayed < numTurns) {
-        if (turnsPlayed > 0) {
+    for (unsigned int turn = 0; turn < numTurns; ++turn) {
+        if (turn > 0) {
             std::cout << std::endl;
         }
-        std::cout << "========== Turn " << (turnsPlayed + 1) << " ==========" << std::endl;
-        Player *currentPlayer = _players[_currentPlayerIndex];
-        _playPlayerTurn(*currentPlayer);
+        std::cout << "========== Turn " << (turn + 1) << " ==========" << std::endl;
+        Player &currentPlayer = _players[_currentPlayerIndex];
+        _playPlayerTurn(currentPlayer);
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
-        ++turnsPlayed;
     }
     _showSquareLandingInfo();
 }
 
-void Game::_showSquareLandingInfo() {
+void Game::_showSquareLandingInfo() const {
     if (_board == nullptr) {
         std::cerr << "No board to show square landing info." << std::endl;
         return;

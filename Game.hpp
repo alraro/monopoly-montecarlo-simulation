@@ -10,13 +10,13 @@
 class Game {
     private:
         std::unique_ptr<Board> _board;
-        std::vector<Player *> _players;
+        std::vector<Player> _players;
         unsigned int _currentPlayerIndex;
 
         unsigned int _timesJailed;
         unsigned int _turnsSpentInJail;
 
-        void _showSquareLandingInfo();
+        void _showSquareLandingInfo() const;
         void _sendPlayerToJail(Player &player);
 
         EffectResult _movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll);
@@ -29,7 +29,6 @@ class Game {
         Game();
         Game(const Game &other);
         Game &operator=(const Game &other);
-        ~Game();
 
         Game &clear();
 
