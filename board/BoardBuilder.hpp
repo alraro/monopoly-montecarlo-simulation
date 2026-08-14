@@ -19,6 +19,7 @@ class BoardBuilder {
         BoardBuilder &addGoToJailSquare();
         BoardBuilder &addLuckSquare();
         BoardBuilder &addCommunitySquare();
+        BoardBuilder &addParkingSquare();
 
         BoardBuilder &addPropertySquare(const std::string &name);
 };

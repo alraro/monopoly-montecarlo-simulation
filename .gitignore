@@ -1,3 +1,4 @@
 monopoly
 obj/
 *.o
+*.log

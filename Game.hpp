@@ -4,6 +4,7 @@
 # include "Board.hpp"
 # include "Player.hpp"
 # include "effectType.hpp"
+# include "utils.hpp"
 
 class Game {
     private:

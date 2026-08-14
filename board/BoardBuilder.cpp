@@ -5,6 +5,7 @@
 #include "LuckSquare.hpp"
 #include "CommunitySquare.hpp"
 #include "PropertySquare.hpp"
+#include "ParkingSquare.hpp"
 
 BoardBuilder::BoardBuilder(): _board(new Board()) {}
 
@@ -71,5 +72,10 @@ BoardBuilder &BoardBuilder::addCommunitySquare() {
 
 BoardBuilder &BoardBuilder::addPropertySquare(const std::string &name) {
     _board->addSquare(new PropertySquare(name));
+    return *this;
+}
+
+BoardBuilder &BoardBuilder::addParkingSquare() {
+    _board->addSquare(new ParkingSquare());
     return *this;
 }

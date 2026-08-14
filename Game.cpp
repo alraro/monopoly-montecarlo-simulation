@@ -143,7 +143,9 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
 
 void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll) {
     player.resetDoublesRolled();
-    EffectResult appliedEffect = NONE;
+    EffectResult appliedEffect;
+    appliedEffect.type = NONE;
+    appliedEffect.value = 0;
 
     if (player.isInJail()) {
         std::cout << "Player " << player.getName() << " is in Jail and did not roll doubles." << std::endl;
@@ -156,7 +158,7 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
 }
 
 void Game::_playPlayerTurn(Player &player) {
-    std::cout << "Turn " << (turnsPlayed + 1) << ": Player " << player.getName() << "'s turn." << std::endl;
+    std::cout << "Player " << player.getName() << "'s turn." << std::endl;
 
     MonopolyDiceRollResult diceRoll = rollMonopolyDice();
     std::cout << "Player " << player.getName() << " rolled a " << diceRoll.total << " (" << diceRoll.die1 << " + " << diceRoll.die2 << ") || " << (diceRoll.doubles ? "DOUBLES!" : "No Doubles") << std::endl;
@@ -180,8 +182,12 @@ void Game::runSimulation(unsigned int numTurns) {
 
     unsigned int turnsPlayed = 0;
     while (turnsPlayed < numTurns) {
+        if (turnsPlayed > 0) {
+            std::cout << std::endl;
+        }
+        std::cout << "========== Turn " << (turnsPlayed + 1) << " ==========" << std::endl;
         Player *currentPlayer = _players[_currentPlayerIndex];
-        _playPlayerTurn(currentPlayer);
+        _playPlayerTurn(*currentPlayer);
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
         ++turnsPlayed;
