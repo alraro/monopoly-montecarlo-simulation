@@ -1,5 +1,6 @@
 CXX          = c++
-CXXFLAGS     = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS     = -Wall -Wextra -Werror -std=c++23
+MAKEFLAGS    = -j$(shell nproc)
 
 NAME         = monopoly
 MODULE_NAME  = monopoly
@@ -42,13 +43,13 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
-	@echo "\n${MODULE_NAME} compiled successfully!"
+	@echo "${MODULE_NAME} compiled successfully!"
 
 # 2. Regla genérica que captura archivos en subcarpetas
 $(OBJDIR)/%.o: %.cpp $(DEPS)
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
-	@printf "Compiling ${MODULE_NAME} %s\r" "$<"
+	@printf "Compiling ${MODULE_NAME} %s\n" "$<"
 
 clean:
 	@rm -rf $(OBJDIR)
@@ -56,6 +57,6 @@ clean:
 fclean: clean
 	@rm -f $(NAME)
 
-re: fclean all
+re: fclean .WAIT all
 
 .PHONY: all clean fclean re

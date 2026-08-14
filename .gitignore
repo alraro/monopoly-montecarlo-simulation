@@ -2,3 +2,4 @@ monopoly
 obj/
 *.o
 *.log
+baseline.txt
