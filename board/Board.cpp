@@ -4,16 +4,18 @@
 Board::Board(): _squares(), _jailSquareIndex(0) {}
 
 Board::Board(const Board &other): _squares(), _jailSquareIndex(other._jailSquareIndex) {
-    for (std::vector<std::unique_ptr<BaseSquare>>::const_iterator it = other._squares.begin(); it != other._squares.end(); ++it) {
-        _squares.push_back((*it)->clone());
+    _squares.reserve(other._squares.size());
+    for (const auto &square : other._squares) {
+        _squares.push_back(square->clone());
     }
 }
 
 Board &Board::operator=(const Board &other) {
     if (this != &other) {
         _squares.clear();
-        for (std::vector<std::unique_ptr<BaseSquare>>::const_iterator it = other._squares.begin(); it != other._squares.end(); ++it) {
-            _squares.push_back((*it)->clone());
+        _squares.reserve(other._squares.size());
+        for (const auto &square : other._squares) {
+            _squares.push_back(square->clone());
         }
         _jailSquareIndex = other._jailSquareIndex;
     }
@@ -27,8 +29,8 @@ void Board::addSquare(std::unique_ptr<BaseSquare> square) {
 }
 
 void Board::printBoard() const {
-    for (std::vector<std::unique_ptr<BaseSquare>>::const_iterator it = _squares.begin(); it != _squares.end(); ++it) {
-        std::cout << (*it)->getName() << " (Landed on: " << (*it)->getTimesLandedOn() << " times)" << std::endl;
+    for (const auto &square : _squares) {
+        std::cout << square->getName() << " (Landed on: " << square->getTimesLandedOn() << " times)" << std::endl;
     }
 }
 
