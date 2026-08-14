@@ -13,6 +13,6 @@ EffectResult PropertySquare::getSquareEffect(const Player &player) const {
     return result;
 }
 
-BaseSquare *PropertySquare::clone() const {
-    return new PropertySquare(*this);
+std::unique_ptr<BaseSquare> PropertySquare::clone() const {
+    return std::make_unique<PropertySquare>(*this);
 }

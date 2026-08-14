@@ -8,7 +8,7 @@ class CommunitySquare : public BaseSquare {
     public:
         CommunitySquare();
 
-        BaseSquare *clone() const override;
+        std::unique_ptr<BaseSquare> clone() const override;
 };
 
 #endif

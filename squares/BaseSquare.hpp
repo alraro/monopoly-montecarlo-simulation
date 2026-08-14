@@ -2,6 +2,7 @@
 # define ISQUARE_HPP
 # include <string>
 # include "effectType.hpp"
+# include <memory>
 
 class Player;
 
@@ -23,7 +24,7 @@ class BaseSquare {
         int getTimesLandedOn() const;
         const std::string &getName() const;
 
-        virtual BaseSquare *clone() const = 0;
+        virtual std::unique_ptr<BaseSquare> clone() const = 0;
 };
 
 #endif

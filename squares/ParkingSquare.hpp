@@ -8,7 +8,7 @@ class ParkingSquare: public BaseSquare {
     public:
         ParkingSquare();
 
-        BaseSquare *clone() const override;
+        std::unique_ptr<BaseSquare> clone() const override;
 };
 
 #endif

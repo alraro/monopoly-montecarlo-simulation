@@ -11,6 +11,6 @@ EffectResult StartSquare::getSquareEffect(const Player &player) const {
     return result;
 }
 
-BaseSquare *StartSquare::clone() const {
-    return new StartSquare(*this);
+std::unique_ptr<BaseSquare> StartSquare::clone() const {
+    return std::make_unique<StartSquare>(*this);
 }

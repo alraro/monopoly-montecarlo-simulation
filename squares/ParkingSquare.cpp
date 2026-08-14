@@ -11,6 +11,6 @@ EffectResult ParkingSquare::getSquareEffect(const Player &player) const {
     return result;
 }
 
-BaseSquare *ParkingSquare::clone() const {
-    return new ParkingSquare(*this);
+std::unique_ptr<BaseSquare> ParkingSquare::clone() const {
+    return std::make_unique<ParkingSquare>(*this);
 }

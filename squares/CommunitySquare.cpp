@@ -11,6 +11,6 @@ EffectResult CommunitySquare::getSquareEffect(const Player &player) const {
     return result;
 }
 
-BaseSquare *CommunitySquare::clone() const {
-    return new CommunitySquare(*this);
+std::unique_ptr<BaseSquare> CommunitySquare::clone() const {
+    return std::make_unique<CommunitySquare>(*this);
 }

@@ -6,37 +6,12 @@
 #include "CommunitySquare.hpp"
 #include "PropertySquare.hpp"
 #include "ParkingSquare.hpp"
+#include <memory>
 
-BoardBuilder::BoardBuilder(): _board(new Board()) {}
-
-BoardBuilder::BoardBuilder(const BoardBuilder &other) {
-    if (other._board != nullptr) {
-        this->_board = new Board(*other._board);
-    } else {
-        this->_board = nullptr;
-    }
-}
-
-BoardBuilder &BoardBuilder::operator=(const BoardBuilder &other) {
-    if (this != &other) {
-        delete _board;
-
-        if (other._board != nullptr) {
-            this->_board = new Board(*other._board);
-        } else {
-            this->_board = nullptr;
-        }
-    }
-    return *this;
-}
-
-BoardBuilder::~BoardBuilder() {
-    delete _board;
-}
+BoardBuilder::BoardBuilder(): _board(std::make_unique<Board>()) {}
 
 BoardBuilder &BoardBuilder::reset() {
-    delete _board;
-    _board = new Board();
+    _board = std::make_unique<Board>();
     return *this;
 }
 
@@ -45,37 +20,37 @@ const Board &BoardBuilder::getBoard() const {
 }
 
 BoardBuilder &BoardBuilder::addStartSquare() {
-    _board->addSquare(new StartSquare());
+    _board->addSquare(std::make_unique<StartSquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addJailSquare() {
-    _board->addSquare(new JailSquare());
+    _board->addSquare(std::make_unique<JailSquare>());
     _board->setJailSquareIndex(_board->getBoardSize() - 1);
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addGoToJailSquare() {
-    _board->addSquare(new GoToJailSquare());
+    _board->addSquare(std::make_unique<GoToJailSquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addLuckSquare() {
-    _board->addSquare(new LuckSquare());
+    _board->addSquare(std::make_unique<LuckSquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addCommunitySquare() {
-    _board->addSquare(new CommunitySquare());
+    _board->addSquare(std::make_unique<CommunitySquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addPropertySquare(const std::string &name) {
-    _board->addSquare(new PropertySquare(name));
+    _board->addSquare(std::make_unique<PropertySquare>(name));
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addParkingSquare() {
-    _board->addSquare(new ParkingSquare());
+    _board->addSquare(std::make_unique<ParkingSquare>());
     return *this;
 }

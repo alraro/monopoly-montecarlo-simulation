@@ -10,7 +10,7 @@ class PropertySquare : public BaseSquare {
 
         PropertySquare(std::string name);
 
-        BaseSquare *clone() const override;
+        std::unique_ptr<BaseSquare> clone() const override;
 };
 
 #endif

@@ -4,12 +4,13 @@
 
 class BoardBuilder {
     private:
-        Board *_board;
+        std::unique_ptr<Board> _board;
     public:
         BoardBuilder();
-        BoardBuilder(const BoardBuilder &other);
-        BoardBuilder &operator=(const BoardBuilder &other);
-        ~BoardBuilder();
+        BoardBuilder(const BoardBuilder &other) = delete;
+        BoardBuilder &operator=(const BoardBuilder &other) = delete;
+        BoardBuilder(BoardBuilder &&other) noexcept = default;
+        BoardBuilder &operator=(BoardBuilder &&other) noexcept = default;
 
         BoardBuilder &reset();
         const Board &getBoard() const;

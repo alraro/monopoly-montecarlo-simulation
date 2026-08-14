@@ -8,7 +8,7 @@ class GoToJailSquare : public BaseSquare {
     public:
         GoToJailSquare();
 
-        BaseSquare *clone() const override;
+        std::unique_ptr<BaseSquare> clone() const override;
 };
 
 #endif

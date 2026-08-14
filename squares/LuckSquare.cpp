@@ -11,6 +11,6 @@ EffectResult LuckSquare::getSquareEffect(const Player &player) const {
     return result;
 }
 
-BaseSquare *LuckSquare::clone() const {
-    return new LuckSquare(*this);
+std::unique_ptr<BaseSquare> LuckSquare::clone() const {
+    return std::make_unique<LuckSquare>(*this);
 }

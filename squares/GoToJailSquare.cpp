@@ -11,6 +11,6 @@ EffectResult GoToJailSquare::getSquareEffect(const Player &player) const {
     return result;
 }
 
-BaseSquare *GoToJailSquare::clone() const {
-    return new GoToJailSquare(*this);
+std::unique_ptr<BaseSquare> GoToJailSquare::clone() const {
+    return std::make_unique<GoToJailSquare>(*this);
 }

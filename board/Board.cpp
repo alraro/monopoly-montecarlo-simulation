@@ -3,25 +3,16 @@
 
 Board::Board(): _squares(), _jailSquareIndex(0) {}
 
-Board::~Board() {
-    for (std::vector<BaseSquare *>::iterator it = _squares.begin(); it != _squares.end(); ++it) {
-        delete *it;
-    }
-}
-
 Board::Board(const Board &other): _squares(), _jailSquareIndex(other._jailSquareIndex) {
-    for (std::vector<BaseSquare *>::const_iterator it = other._squares.begin(); it != other._squares.end(); ++it) {
+    for (std::vector<std::unique_ptr<BaseSquare>>::const_iterator it = other._squares.begin(); it != other._squares.end(); ++it) {
         _squares.push_back((*it)->clone());
     }
 }
 
 Board &Board::operator=(const Board &other) {
     if (this != &other) {
-        for (std::vector<BaseSquare *>::iterator it = _squares.begin(); it != _squares.end(); ++it) {
-            delete *it;
-        }
         _squares.clear();
-        for (std::vector<BaseSquare *>::const_iterator it = other._squares.begin(); it != other._squares.end(); ++it) {
+        for (std::vector<std::unique_ptr<BaseSquare>>::const_iterator it = other._squares.begin(); it != other._squares.end(); ++it) {
             _squares.push_back((*it)->clone());
         }
         _jailSquareIndex = other._jailSquareIndex;
@@ -29,21 +20,21 @@ Board &Board::operator=(const Board &other) {
     return *this;
 }
 
-void Board::addSquare(BaseSquare *square) {
+void Board::addSquare(std::unique_ptr<BaseSquare> square) {
     if (square != nullptr) {
-        this->_squares.push_back(square);
+        this->_squares.push_back(std::move(square));
     }
 }
 
 void Board::printBoard() const {
-    for (std::vector<BaseSquare *>::const_iterator it = _squares.begin(); it != _squares.end(); ++it) {
+    for (std::vector<std::unique_ptr<BaseSquare>>::const_iterator it = _squares.begin(); it != _squares.end(); ++it) {
         std::cout << (*it)->getName() << " (Landed on: " << (*it)->getTimesLandedOn() << " times)" << std::endl;
     }
 }
 
 BaseSquare *Board::getSquare(unsigned int index) const {
     if (index < _squares.size()) {
-        return _squares[index];
+        return _squares[index].get();
     } else {
         return nullptr;
     }
