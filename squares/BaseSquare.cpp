@@ -11,10 +11,6 @@ BaseSquare &BaseSquare::operator=(const BaseSquare &other) {
     return *this;
 }
 
-EffectResult BaseSquare::landOn(const Player &player) {
-    return this->getSquareEffect(player);
-}
-
 const std::string &BaseSquare::getName() const {
     return this->_name;
 }

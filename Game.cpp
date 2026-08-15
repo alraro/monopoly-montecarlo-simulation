@@ -64,7 +64,7 @@ EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult di
 
     std::cout << "Player " << player.getName() << " landed on square " << player.getCurrentSquare() << " (" << currentSquare->getName() << ")." << std::endl;
 
-    EffectResult effect = currentSquare->landOn(player);
+    EffectResult effect = currentSquare->getSquareEffect(player);
     switch (effect.type) {
         case EffectType::GoToJail:
             _sendPlayerToJail(player);

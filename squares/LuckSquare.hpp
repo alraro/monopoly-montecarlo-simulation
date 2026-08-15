@@ -3,12 +3,11 @@
 # include "BaseSquare.hpp"
 
 class LuckSquare : public BaseSquare {
-    protected:
-        EffectResult getSquareEffect(const Player &player) const override;
     public:
         LuckSquare();
 
         std::unique_ptr<BaseSquare> clone() const override;
+        EffectResult getSquareEffect(const Player &player) const override;
 };
 
 #endif
