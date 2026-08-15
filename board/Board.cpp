@@ -30,7 +30,7 @@ void Board::addSquare(std::unique_ptr<BaseSquare> square) {
 
 void Board::printBoard() const {
     for (const auto &square : _squares) {
-        std::cout << square->getName() << " (Landed on: " << square->getTimesLandedOn() << " times)" << std::endl;
+        std::cout << square->getName() << std::endl;
     }
 }
 

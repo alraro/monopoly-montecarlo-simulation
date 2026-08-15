@@ -160,26 +160,7 @@ void Game::runSimulation(unsigned int numTurns) {
 }
 
 void Game::_showSquareLandingInfo() const {
-    if (_board == nullptr) {
-        std::cerr << "No board to show square landing info." << std::endl;
-        return;
-    }
+    std::cout << std::endl << "========== Square Landing Info ==========" << std::endl;
+    std::cout << "Pending for implementation: Show how many times each square was landed on." << std::endl;
 
-    unsigned int totalLandings = 0;
-
-    std::cout << "\n==========Square Landing Info===========\n" << std::endl;
-    for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
-        BaseSquare *square = _board->getSquare(i);
-        std::cout << "Square " << i << " (" << square->getName() << ") was landed on " << square->getTimesLandedOn() << " times." << std::endl;
-        totalLandings += square->getTimesLandedOn();
-    }
-
-    std::cout << "\n==========Jail Info===========\n" << std::endl;
-    std::cout << "Total landings: " << totalLandings << std::endl;
-    std::cout << "Times jailed: " << _timesJailed << std::endl;
-    std::cout << "Turns spent in jail: " << _turnsSpentInJail << std::endl;
-    if (_timesJailed > 0) {
-        std::cout << "Average turns per jailing: "
-                  << static_cast<double>(_turnsSpentInJail) / _timesJailed << std::endl;
-    }
 }
