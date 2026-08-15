@@ -7,24 +7,6 @@
 
 Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
 
-Game::Game(const Game &other)
-    : _board(other._board ? std::make_unique<Board>(*other._board) : nullptr),
-    _players(other._players), 
-    _currentPlayerIndex(other._currentPlayerIndex), 
-    _timesJailed(other._timesJailed), 
-    _turnsSpentInJail(other._turnsSpentInJail) {}
-
-Game &Game::operator=(const Game &other) {
-    if (this != &other) {
-        _board = other._board ? std::make_unique<Board>(*other._board) : nullptr;
-        _players = other._players;
-        _currentPlayerIndex = other._currentPlayerIndex;
-        _timesJailed = other._timesJailed;
-        _turnsSpentInJail = other._turnsSpentInJail;
-    }
-    return *this;
-}
-
 Game &Game::clear() {
     clearBoard();
     clearPlayers();
@@ -49,19 +31,23 @@ Game &Game::clearPlayers() {
     return *this;
 }
 
-Game &Game::setBoard(std::unique_ptr<Board> board) {
+Game &Game::setBoard(std::shared_ptr<const Board> board) {
     _board = std::move(board);
     return *this;
 }
 
 Game &Game::setDefaultBoard() {
-    _board = BoardFactory::createDefaultBoard();
+    _board = std::make_shared<const Board>(BoardFactory::createDefaultBoard());
     return *this;
 }
 
 Game &Game::clearBoard() {
     _board = nullptr;
     return *this;
+}
+
+const std::shared_ptr<const Board> &Game::getBoard() const {
+    return _board; 
 }
 
 void Game::_sendPlayerToJail(Player &player) {

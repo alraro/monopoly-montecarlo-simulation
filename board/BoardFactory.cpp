@@ -3,7 +3,7 @@
 
 namespace BoardFactory {
 
-    std::unique_ptr<Board> createDefaultBoard() {
+    Board createDefaultBoard() {
         BoardBuilder builder;
         return builder.addStartSquare()
             .addPropertySquare("Ronda de Valencia")

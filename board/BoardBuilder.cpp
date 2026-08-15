@@ -8,51 +8,49 @@
 #include "ParkingSquare.hpp"
 #include <memory>
 
-BoardBuilder::BoardBuilder(): _board(std::make_unique<Board>()) {}
+BoardBuilder::BoardBuilder(): _board(Board()) {}
 
 BoardBuilder &BoardBuilder::reset() {
-    _board = std::make_unique<Board>();
+    _board = Board();
     return *this;
 }
 
-std::unique_ptr<Board> BoardBuilder::build() {
-    std::unique_ptr<Board> builtBoard = std::move(_board);
-    _board = std::make_unique<Board>();
-    return builtBoard;
+Board BoardBuilder::build() {
+    return _board;
 }
 
 BoardBuilder &BoardBuilder::addStartSquare() {
-    _board->addSquare(std::make_unique<StartSquare>());
+    _board.addSquare(std::make_unique<StartSquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addJailSquare() {
-    _board->addSquare(std::make_unique<JailSquare>());
-    _board->setJailSquareIndex(_board->getBoardSize() - 1);
+    _board.addSquare(std::make_unique<JailSquare>());
+    _board.setJailSquareIndex(_board.getBoardSize() - 1);
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addGoToJailSquare() {
-    _board->addSquare(std::make_unique<GoToJailSquare>());
+    _board.addSquare(std::make_unique<GoToJailSquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addLuckSquare() {
-    _board->addSquare(std::make_unique<LuckSquare>());
+    _board.addSquare(std::make_unique<LuckSquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addCommunitySquare() {
-    _board->addSquare(std::make_unique<CommunitySquare>());
+    _board.addSquare(std::make_unique<CommunitySquare>());
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addPropertySquare(const std::string &name) {
-    _board->addSquare(std::make_unique<PropertySquare>(name));
+    _board.addSquare(std::make_unique<PropertySquare>(name));
     return *this;
 }
 
 BoardBuilder &BoardBuilder::addParkingSquare() {
-    _board->addSquare(std::make_unique<ParkingSquare>());
+    _board.addSquare(std::make_unique<ParkingSquare>());
     return *this;
 }

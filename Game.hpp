@@ -9,7 +9,7 @@
 
 class Game {
     private:
-        std::unique_ptr<Board> _board;
+        std::shared_ptr<const Board> _board;
         std::vector<Player> _players;
         unsigned int _currentPlayerIndex;
 
@@ -27,8 +27,6 @@ class Game {
         void _playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll);
     public:
         Game();
-        Game(const Game &other);
-        Game &operator=(const Game &other);
 
         Game &clear();
 
@@ -36,9 +34,10 @@ class Game {
         Game &addPlayer(const std::string &name);
         Game &clearPlayers();
 
-        Game &setBoard(std::unique_ptr<Board> board);
+        Game &setBoard(std::shared_ptr<const Board> board);
         Game &setDefaultBoard();
         Game &clearBoard();
+        const std::shared_ptr<const Board> &getBoard() const;
 
         void runSimulation(unsigned int numTurns);
 };

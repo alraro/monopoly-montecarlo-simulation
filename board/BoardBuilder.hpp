@@ -5,7 +5,7 @@
 
 class BoardBuilder {
     private:
-        std::unique_ptr<Board> _board;
+        Board _board;
     public:
         BoardBuilder();
         BoardBuilder(const BoardBuilder &other) = delete;
@@ -14,7 +14,7 @@ class BoardBuilder {
         BoardBuilder &operator=(BoardBuilder &&other) noexcept = default;
 
         BoardBuilder &reset();
-        std::unique_ptr<Board> build();
+        Board build();
 
         BoardBuilder &addStartSquare();
         BoardBuilder &addJailSquare();

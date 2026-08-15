@@ -4,7 +4,7 @@
 # include <memory>
 
 namespace BoardFactory {
-    std::unique_ptr<Board> createDefaultBoard();
+    Board createDefaultBoard();
 }
 
 #endif
