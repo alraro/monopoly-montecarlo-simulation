@@ -60,11 +60,11 @@ void Game::_sendPlayerToJail(Player &player) {
 
 EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
     player.setCurrentSquare((player.getCurrentSquare() + diceRoll.total) % _board->getBoardSize());
-    BaseSquare *currentSquare = _board->getSquare(player.getCurrentSquare());
+    const BaseSquare &currentSquare = _board->getSquare(player.getCurrentSquare());
 
-    std::cout << "Player " << player.getName() << " landed on square " << player.getCurrentSquare() << " (" << currentSquare->getName() << ")." << std::endl;
+    std::cout << "Player " << player.getName() << " landed on square " << player.getCurrentSquare() << " (" << currentSquare.getName() << ")." << std::endl;
 
-    EffectResult effect = currentSquare->getSquareEffect(player);
+    EffectResult effect = currentSquare.getSquareEffect(player);
     switch (effect.type) {
         case EffectType::GoToJail:
             _sendPlayerToJail(player);

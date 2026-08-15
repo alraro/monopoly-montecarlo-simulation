@@ -16,7 +16,9 @@ BoardBuilder &BoardBuilder::reset() {
 }
 
 Board BoardBuilder::build() {
-    return _board;
+    Board builtBoard = std::move(_board);
+    reset();
+    return builtBoard;
 }
 
 BoardBuilder &BoardBuilder::addStartSquare() {

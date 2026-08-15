@@ -9,7 +9,6 @@ int main() {
     std::cout << "Random seed: " << initRandom(SEED) << std::endl;
 
     Game game1 = Game().setDefaultBoard().addPlayer("Alice").addPlayer("Bob");
-
     game1.runSimulation(TURNS);
     return 0;
 }

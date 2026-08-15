@@ -6,7 +6,6 @@ class LuckSquare : public BaseSquare {
     public:
         LuckSquare();
 
-        std::unique_ptr<BaseSquare> clone() const override;
         EffectResult getSquareEffect(const Player &player) const override;
 };
 

@@ -6,7 +6,6 @@ class CommunitySquare : public BaseSquare {
     public:
         CommunitySquare();
         
-        std::unique_ptr<BaseSquare> clone() const override;
         EffectResult getSquareEffect(const Player &player) const override;
 };
 

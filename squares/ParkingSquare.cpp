@@ -5,7 +5,3 @@ ParkingSquare::ParkingSquare(): BaseSquare("Parking") {}
 EffectResult ParkingSquare::getSquareEffect(const Player &) const {
     return {EffectType::None, 0};
 }
-
-std::unique_ptr<BaseSquare> ParkingSquare::clone() const {
-    return std::make_unique<ParkingSquare>(*this);
-}
