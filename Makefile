@@ -15,8 +15,8 @@ SQUARESDIR   = squares
 INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
-BASESRC      = main.cpp Game.cpp Player.cpp utils.cpp
-BASEDEPS     = utils.hpp Game.hpp Player.hpp effectType.hpp rules.hpp
+BASESRC      = main.cpp Game.cpp Player.cpp utils.cpp GameStatistics.cpp
+BASEDEPS     = utils.hpp Game.hpp Player.hpp effectType.hpp rules.hpp GameStatistics.hpp
 
 BOARDSRC     = Board.cpp BoardBuilder.cpp BoardFactory.cpp
 BOARDDEPS    = Board.hpp BoardBuilder.hpp BoardFactory.hpp

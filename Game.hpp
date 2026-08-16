@@ -6,15 +6,14 @@
 # include "effectType.hpp"
 # include "utils.hpp"
 # include <memory>
+# include "GameStatistics.hpp"
 
 class Game {
     private:
-        std::shared_ptr<const Board> _board;
-        std::vector<Player> _players;
-        unsigned int _currentPlayerIndex;
-
-        unsigned int _timesJailed;
-        unsigned int _turnsSpentInJail;
+        std::shared_ptr<const Board>    _board;
+        std::vector<Player>             _players;
+        unsigned int                    _currentPlayerIndex;
+        GameStatistics                  _gameStatistics;
 
         void _showSquareLandingInfo() const;
         void _sendPlayerToJail(Player &player);
@@ -25,6 +24,10 @@ class Game {
 
         void _playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRoll);
         void _playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll);
+
+        void _setupGameStatistics();
+
+        void _printStatistics() const;
     public:
         Game();
 

@@ -5,13 +5,11 @@
 #include <iostream>
 #include "rules.hpp"
 
-Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _timesJailed(0), _turnsSpentInJail(0) {}
+Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _gameStatistics() {}
 
 Game &Game::clear() {
     clearBoard();
     clearPlayers();
-    _timesJailed = 0;
-    _turnsSpentInJail = 0;
     return *this;
 }
 
@@ -21,7 +19,7 @@ Game &Game::addPlayer(const Player &player) {
 }
 
 Game &Game::addPlayer(const std::string &name) {
-    _players.emplace_back(name, 0);
+    _players.emplace_back(_players.size(), name, 0);
     return *this;
 }
 
@@ -54,7 +52,10 @@ void Game::_sendPlayerToJail(Player &player) {
     player.setCurrentSquare(_board->getJailSquareIndex());
     player.startTurnsLeftInJailCountdown();
     player.resetDoublesRolled();
-    ++_timesJailed;
+
+    this->_gameStatistics.recordTimesJailedPlayer(player.getId());
+    std::cout << "[DEBUG] Player " << player.getName() << "'s times jailed count is now " << _gameStatistics.getTimesJailedPlayer(player.getId()) << std::endl;
+
     std::cout << "Player " << player.getName() << " is sent to Jail!" << std::endl;
 }
 
@@ -119,13 +120,13 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
 }
 
 void Game::_playPlayerTurn(Player &player) {
-    if (player.isInJail()) {
-        ++_turnsSpentInJail;
-    }
-
+    this->_gameStatistics.recordTurnPlayer(player.getId());
+    std::cout << "[DEBUG] Player " << player.getName() << "'s turn count is now " << _gameStatistics.getTotalTurnsPlayer(player.getId()) << std::endl;
     std::cout << "Player " << player.getName() << "'s turn." << std::endl;
-
+    
     MonopolyDiceRollResult diceRoll = rollMonopolyDice();
+    this->_gameStatistics.recordDiceRollPlayer(player.getId(), diceRoll);
+
     std::cout << "Player " << player.getName() << " rolled a " << diceRoll.total << " (" << diceRoll.die1 << " + " << diceRoll.die2 << ") || " << (diceRoll.doubles ? "DOUBLES!" : "No Doubles") << std::endl;
 
     if (diceRoll.doubles) {
@@ -133,6 +134,50 @@ void Game::_playPlayerTurn(Player &player) {
     } else {
         _playPlayerTurnNoDoubles(player, diceRoll);
     }
+
+    if (player.isInJail()) {
+        this->_gameStatistics.recordTurnInJailPlayer(player.getId());
+    }
+}
+
+void Game::_setupGameStatistics() {
+    _gameStatistics.setPlayerCount(_players.size());
+    _gameStatistics.setSquareCount(_board->getBoardSize());
+}
+
+void Game::_printStatistics() const {
+    std::cout << std::endl << "========== Game Statistics ==========" << std::endl;
+    std::cout << "\nTurns spent in Jail per player:" << std::endl;
+    for (unsigned int i = 0; i < _players.size(); ++i) {
+        std::cout << "\t" << _players[i].getName() << ": " << _gameStatistics.getTurnsSpentInJailPlayer(_players[i].getId()) << std::endl;
+    }
+
+    std::cout << "\nTimes jailed per player:" << std::endl;
+    for (unsigned int i = 0; i < _players.size(); ++i) {
+        std::cout << "\t" << _players[i].getName() << ": " << _gameStatistics.getTimesJailedPlayer(_players[i].getId()) << std::endl;
+    }
+
+    std::cout << "\nTotal turns per player:" << std::endl;
+    for (unsigned int i = 0; i < _players.size(); ++i) {
+        std::cout << "\t" << _players[i].getName() << ": " << _gameStatistics.getTotalTurnsPlayer(_players[i].getId()) << std::endl;
+    }
+    
+    std::cout << "\nTotal dice rolls per player:" << std::endl;
+    for (unsigned int i = 0; i < _players.size(); ++i) {
+        std::cout << "\t" << _players[i].getName() << ": " << _gameStatistics.getTotalDiceRollsPlayer(_players[i].getId()) << std::endl;
+    }
+
+    std::cout << "\nTotal doubles rolled per player:" << std::endl;
+    for (unsigned int i = 0; i < _players.size(); ++i) {
+        std::cout << "\t" << _players[i].getName() << ": " << _gameStatistics.getTotalDoublesRolledPlayer(_players[i].getId()) << std::endl;
+    }
+
+    std::cout << "\nTotal landings per square:" << std::endl;
+    for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
+        const BaseSquare &square = _board->getSquare(i);
+        std::cout << "\t" << square.getName() << " : " << _gameStatistics.getTotalLandingsSquare(i) << std::endl;
+    }
+
 }
 
 void Game::runSimulation(unsigned int numTurns) {
@@ -145,6 +190,7 @@ void Game::runSimulation(unsigned int numTurns) {
         }
         return ;
     }
+    _setupGameStatistics();
 
     for (unsigned int turn = 0; turn < numTurns; ++turn) {
         if (turn > 0) {
@@ -156,11 +202,5 @@ void Game::runSimulation(unsigned int numTurns) {
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
     }
-    _showSquareLandingInfo();
-}
-
-void Game::_showSquareLandingInfo() const {
-    std::cout << std::endl << "========== Square Landing Info ==========" << std::endl;
-    std::cout << "Pending for implementation: Show how many times each square was landed on." << std::endl;
-
+    this->_printStatistics();
 }
