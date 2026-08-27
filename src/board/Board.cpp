@@ -3,13 +3,17 @@
 
 Board::Board(): _squares(), _jailSquareIndex(0) {}
 
-Board &Board::clone() const {
-    Board newBoard;
-    for (const auto &square : _squares) {
-        newBoard.addSquare(square->clone());
+Board::Board(const Board &other): _squares(), _jailSquareIndex(other._jailSquareIndex) {
+    for (const auto &square : other._squares) {
+        _squares.push_back(square->clone());
     }
-    newBoard.setJailSquareIndex(_jailSquareIndex);
-    return newBoard;
+}
+
+Board& Board::operator=(const Board &other) {
+    Board tmp(other);
+    std::swap(_squares, tmp._squares);
+    std::swap(_jailSquareIndex, tmp._jailSquareIndex);
+    return *this;
 }
 
 void Board::addSquare(std::unique_ptr<BaseSquare> square) {

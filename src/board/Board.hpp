@@ -10,6 +10,11 @@ class Board {
         unsigned int _jailSquareIndex;
     public:
         Board();
+        ~Board() = default;
+        Board(const Board&);
+        Board& operator=(const Board&);
+        Board(Board&&) noexcept = default;
+        Board& operator=(Board&&) noexcept = default;
 
         void addSquare(std::unique_ptr<BaseSquare> square);
         void printBoard() const;
@@ -19,8 +24,6 @@ class Board {
         void setJailSquareIndex(unsigned int index);
 
         unsigned int getBoardSize() const;
-
-        Board &clone() const;
 };
 
 #endif
