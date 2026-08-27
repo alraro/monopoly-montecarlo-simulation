@@ -13,8 +13,9 @@ SQUARESDIR   = $(BASEDIR)/squares
 PLAYERDIR    = $(BASEDIR)/player
 GAMEDIR      = $(BASEDIR)/game
 EXTRADIR     = $(BASEDIR)/extra
+STRATEGYDIR   = $(BASEDIR)/strategy
 
-INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR)
+INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
 BASESRC      = main.cpp
@@ -38,6 +39,9 @@ GAMEDEPS     = Game.hpp GameStatistics.hpp
 
 EXTRASRC     = utils.cpp
 EXTRADEPS    = utils.hpp effectType.hpp rules.hpp
+
+STRATEGYSRC  = 
+STRATEGYDEPS = Strategy.hpp
 
 SRC          = $(addprefix $(BASEDIR)/, $(BASESRC)) \
                $(addprefix $(BOARDDIR)/, $(BOARDSRC)) \

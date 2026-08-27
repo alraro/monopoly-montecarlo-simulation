@@ -33,7 +33,6 @@ class Game {
 
         Game &clear();
 
-        Game &addPlayer(const Player &player);
         Game &addPlayer(const std::string &name);
         Game &clearPlayers();
 

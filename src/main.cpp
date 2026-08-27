@@ -5,7 +5,7 @@
 
 int main() {
     constexpr unsigned int TURNS = 10000;
-    constexpr unsigned int SEED = 12345;
+    constexpr unsigned int SEED = 123456;
     std::cout << "Random seed: " << initRandom(SEED) << std::endl;
 
     Game game1 = Game().setDefaultBoard().addPlayer("Alice").addPlayer("Bob");
