@@ -10,12 +10,15 @@ OBJDIR       = obj
 BASEDIR      = src
 BOARDDIR     = $(BASEDIR)/board
 SQUARESDIR   = $(BASEDIR)/squares
+PLAYERDIR    = $(BASEDIR)/player
+GAMEDIR      = $(BASEDIR)/game
+EXTRADIR     = $(BASEDIR)/extra
 
-INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR)
+INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
-BASESRC      = main.cpp Game.cpp Player.cpp utils.cpp GameStatistics.cpp
-BASEDEPS     = utils.hpp Game.hpp Player.hpp effectType.hpp rules.hpp GameStatistics.hpp
+BASESRC      = main.cpp
+BASEDEPS     = 
 
 BOARDSRC     = Board.cpp BoardBuilder.cpp BoardFactory.cpp
 BOARDDEPS    = Board.hpp BoardBuilder.hpp BoardFactory.hpp
@@ -27,13 +30,28 @@ SQUARESDEPS  = BaseSquare.hpp CommunitySquare.hpp GoToJailSquare.hpp \
                JailSquare.hpp LuckSquare.hpp ParkingSquare.hpp \
                PropertySquare.hpp StartSquare.hpp
 
+PLAYERSRC     = Player.cpp
+PLAYERDEPS    = Player.hpp
+
+GAMESRC      = Game.cpp GameStatistics.cpp
+GAMEDEPS     = Game.hpp GameStatistics.hpp
+
+EXTRASRC     = utils.cpp
+EXTRADEPS    = utils.hpp effectType.hpp rules.hpp
+
 SRC          = $(addprefix $(BASEDIR)/, $(BASESRC)) \
                $(addprefix $(BOARDDIR)/, $(BOARDSRC)) \
-               $(addprefix $(SQUARESDIR)/, $(SQUARESSRC))
+               $(addprefix $(PLAYERDIR)/, $(PLAYERSRC)) \
+               $(addprefix $(SQUARESDIR)/, $(SQUARESSRC)) \
+               $(addprefix $(GAMEDIR)/, $(GAMESRC)) \
+               $(addprefix $(EXTRADIR)/, $(EXTRASRC))
 
 DEPS         = $(addprefix $(BASEDIR)/, $(BASEDEPS)) \
                $(addprefix $(BOARDDIR)/, $(BOARDDEPS)) \
-               $(addprefix $(SQUARESDIR)/, $(SQUARESDEPS))
+               $(addprefix $(PLAYERDIR)/, $(PLAYERDEPS)) \
+               $(addprefix $(SQUARESDIR)/, $(SQUARESDEPS)) \
+               $(addprefix $(GAMEDIR)/, $(GAMEDEPS)) \
+               $(addprefix $(EXTRADIR)/, $(EXTRADEPS))
 
 # Mapea cualquier src/archivo.cpp a obj/src/archivo.o de forma limpia
 OBJ          = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRC))
