@@ -3,3 +3,4 @@ obj/
 *.o
 *.log
 baseline.txt
+*.csv

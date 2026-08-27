@@ -4,6 +4,7 @@
 #include "effectType.hpp"
 #include <iostream>
 #include "rules.hpp"
+#include <fstream>
 
 Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _gameStatistics() {}
 
@@ -142,7 +143,7 @@ void Game::_setupGameStatistics() {
     _gameStatistics.setSquareCount(_board->getBoardSize());
 }
 
-void Game::_printStatistics() const {
+void Game::printStatistics() const {
     std::cout << std::endl << "========== Game Statistics ==========" << std::endl;
     std::cout << "\nTurns spent in Jail per player:" << std::endl;
     for (unsigned int i = 0; i < _players.size(); ++i) {
@@ -177,6 +178,42 @@ void Game::_printStatistics() const {
 
 }
 
+void Game::exportStatisticsToCSV(const std::string &playersFilename, const std::string &squaresFilename) const {
+    std::ofstream file(playersFilename);
+
+    if (!file.is_open()) {
+        std::cerr << "Failed to open players file for writing: " << playersFilename << std::endl;
+        return;
+    }
+
+    file << "player_id,player_name,total_turns,turns_spent_in_jail,times_jailed,total_dice_rolls,total_doubles_rolled\n";
+    for (const auto &player : _players) {
+        unsigned int playerId = player.getId();
+        file << playerId << ","
+             << player.getName() << ","
+             << _gameStatistics.getTotalTurnsPlayer(playerId) << ","
+             << _gameStatistics.getTurnsSpentInJailPlayer(playerId) << ","
+             << _gameStatistics.getTimesJailedPlayer(playerId) << ","
+             << _gameStatistics.getTotalDiceRollsPlayer(playerId) << ","
+             << _gameStatistics.getTotalDoublesRolledPlayer(playerId) << "\n";
+    }
+    file.close();
+
+    file.open(squaresFilename);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open squares file for writing: " << squaresFilename << std::endl;
+        return;
+    }
+
+    file << "square_name,total_landings\n";
+    for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
+        const BaseSquare &square = _board->getSquare(i);
+        file << square.getName() << ","
+             << _gameStatistics.getTotalLandingsSquare(i) << "\n";
+    }
+    file.close();
+}
+
 void Game::runSimulation(unsigned int numTurns) {
     if (_players.empty() || _board == nullptr) {
         if (_players.empty()) {
@@ -199,5 +236,4 @@ void Game::runSimulation(unsigned int numTurns) {
 
         _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
     }
-    this->_printStatistics();
 }

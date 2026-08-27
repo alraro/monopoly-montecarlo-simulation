@@ -33,6 +33,8 @@ class GameStatistics {
         void recordLandingSquare(unsigned int squareIndex);
         unsigned int getTotalLandingsSquare(unsigned int squareIndex) const;
 
+        
+
 };
 
 #endif
