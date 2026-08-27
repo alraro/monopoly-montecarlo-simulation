@@ -13,9 +13,10 @@ SQUARESDIR   = $(BASEDIR)/squares
 PLAYERDIR    = $(BASEDIR)/player
 GAMEDIR      = $(BASEDIR)/game
 EXTRADIR     = $(BASEDIR)/extra
-STRATEGYDIR   = $(BASEDIR)/strategy
+STRATEGYDIR  = $(BASEDIR)/strategy
+LOGGERDIR    = $(BASEDIR)/logger
 
-INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR)
+INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
 BASESRC      = main.cpp
@@ -43,19 +44,26 @@ EXTRADEPS    = utils.hpp effectType.hpp rules.hpp
 STRATEGYSRC  = 
 STRATEGYDEPS = Strategy.hpp
 
-SRC          = $(addprefix $(BASEDIR)/, $(BASESRC)) \
-               $(addprefix $(BOARDDIR)/, $(BOARDSRC)) \
-               $(addprefix $(PLAYERDIR)/, $(PLAYERSRC)) \
-               $(addprefix $(SQUARESDIR)/, $(SQUARESSRC)) \
-               $(addprefix $(GAMEDIR)/, $(GAMESRC)) \
-               $(addprefix $(EXTRADIR)/, $(EXTRASRC))
+LOGGERSRC   = 
+LOGGERDEPS  = Logger.hpp
 
-DEPS         = $(addprefix $(BASEDIR)/, $(BASEDEPS)) \
-               $(addprefix $(BOARDDIR)/, $(BOARDDEPS)) \
-               $(addprefix $(PLAYERDIR)/, $(PLAYERDEPS)) \
-               $(addprefix $(SQUARESDIR)/, $(SQUARESDEPS)) \
-               $(addprefix $(GAMEDIR)/, $(GAMEDEPS)) \
-               $(addprefix $(EXTRADIR)/, $(EXTRADEPS))
+SRC          = $(addprefix $(BASEDIR)/,     $(BASESRC)) \
+               $(addprefix $(BOARDDIR)/,    $(BOARDSRC)) \
+               $(addprefix $(PLAYERDIR)/,   $(PLAYERSRC)) \
+               $(addprefix $(SQUARESDIR)/,  $(SQUARESSRC)) \
+               $(addprefix $(GAMEDIR)/,     $(GAMESRC)) \
+               $(addprefix $(EXTRADIR)/,    $(EXTRASRC)) \
+               $(addprefix $(LOGGERDIR)/,   $(LOGGERSRC)) \
+               $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
+
+DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
+               $(addprefix $(BOARDDIR)/,    $(BOARDDEPS)) \
+               $(addprefix $(PLAYERDIR)/,   $(PLAYERDEPS)) \
+               $(addprefix $(SQUARESDIR)/,  $(SQUARESDEPS)) \
+               $(addprefix $(GAMEDIR)/,     $(GAMEDEPS)) \
+               $(addprefix $(EXTRADIR)/,    $(EXTRADEPS)) \
+               $(addprefix $(LOGGERDIR)/,   $(LOGGERDEPS)) \
+               $(addprefix $(STRATEGYDIR)/, $(STRATEGYDEPS)) \
 
 # Mapea cualquier src/archivo.cpp a obj/src/archivo.o de forma limpia
 OBJ          = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRC))

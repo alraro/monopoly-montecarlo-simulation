@@ -5,6 +5,7 @@
 #include <iostream>
 #include "rules.hpp"
 #include <fstream>
+#include "Logger.hpp"
 
 Game::Game(): _board(nullptr), _players(), _currentPlayerIndex(0), _gameStatistics() {}
 
@@ -50,9 +51,9 @@ void Game::_sendPlayerToJail(Player &player) {
     player.resetDoublesRolled();
 
     this->_gameStatistics.recordTimesJailedPlayer(player.getId());
-    std::cout << "[DEBUG] Player " << player.getDescription() << "'s times jailed count is now " << _gameStatistics.getTimesJailedPlayer(player.getId()) << std::endl;
+    Logger::debug("[DEBUG] Player ", player.getDescription(), "'s times jailed count is now ", _gameStatistics.getTimesJailedPlayer(player.getId()));
 
-    std::cout << "Player " << player.getDescription() << " is sent to Jail!" << std::endl;
+    Logger::info("Player ", player.getDescription(), " is sent to Jail!");
 }
 
 EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
@@ -61,7 +62,7 @@ EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult di
 
     this->_gameStatistics.recordLandingSquare(player.getCurrentSquare());
 
-    std::cout << "Player " << player.getDescription() << " landed on square " << player.getCurrentSquare() << " (" << currentSquare.getName() << ")." << std::endl;
+    Logger::info("Player ", player.getDescription(), " landed on square ", player.getCurrentSquare(), " (", currentSquare.getName(), ").");
 
     EffectResult effect = currentSquare.getSquareEffect(player);
     switch (effect.type) {
@@ -82,20 +83,20 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
     bool wasInJail = player.isInJail();
 
     if (player.isInJail()) {
-        std::cout << "Player " << player.getDescription() << " is in Jail and rolled doubles to get out!" << std::endl;
+        Logger::info("Player ", player.getDescription(), " is in Jail and rolled doubles to get out!");
         player.resetTurnsLeftInJail();
     } else {
         player.incrementDoublesRolled();
     }
 
     if (player.getDoublesRolledInARow() >= rules::DOUBLES_TO_JAIL) {
-        std::cout << "Player " << player.getDescription() << " rolled doubles three times in a row and is sent to Jail!" << std::endl;
+        Logger::info("Player ", player.getDescription(), " rolled doubles three times in a row and is sent to Jail!");
         _sendPlayerToJail(player);
     } else {
         EffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
 
         if (!wasInJail && appliedEffect.type != EffectType::GoToJail) {
-            std::cout << "Player " << player.getDescription() << " rolled doubles and gets another turn!" << std::endl;
+            Logger::info("Player ", player.getDescription(), " rolled doubles and gets another turn!");
             _playPlayerTurn(player);
         }
     }
@@ -108,7 +109,7 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
     appliedEffect.value = 0;
 
     if (player.isInJail()) {
-        std::cout << "Player " << player.getDescription() << " is in Jail and did not roll doubles." << std::endl;
+        Logger::info("Player ", player.getDescription(), " is in Jail and did not roll doubles.");
     } else {
         appliedEffect = _movePlayerDiceRoll(player, diceRoll);
     }
@@ -119,13 +120,13 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
 
 void Game::_playPlayerTurn(Player &player) {
     this->_gameStatistics.recordTurnPlayer(player.getId());
-    std::cout << "[DEBUG] Player " << player.getDescription() << "'s turn count is now " << _gameStatistics.getTotalTurnsPlayer(player.getId()) << std::endl;
-    std::cout << "Player " << player.getDescription() << "'s turn." << std::endl;
+    Logger::debug("[DEBUG] Player ", player.getDescription(), "'s turn count is now ", _gameStatistics.getTotalTurnsPlayer(player.getId()));
+    Logger::info("Player ", player.getDescription(), "'s turn.");
     
     MonopolyDiceRollResult diceRoll = rollMonopolyDice();
     this->_gameStatistics.recordDiceRollPlayer(player.getId(), diceRoll);
 
-    std::cout << "Player " << player.getDescription() << " rolled a " << diceRoll.total << " (" << diceRoll.die1 << " + " << diceRoll.die2 << ") || " << (diceRoll.doubles ? "DOUBLES!" : "No Doubles") << std::endl;
+    Logger::info("Player ", player.getDescription(), " rolled a ", diceRoll.total, " (", diceRoll.die1, " + ", diceRoll.die2, ") || ", (diceRoll.doubles ? "DOUBLES!" : "No Doubles"));
 
     if (diceRoll.doubles) {
         _playPlayerTurnDoubles(player, diceRoll);
@@ -144,36 +145,36 @@ void Game::_setupGameStatistics() {
 }
 
 void Game::printStatistics() const {
-    std::cout << std::endl << "========== Game Statistics ==========" << std::endl;
-    std::cout << "\nTurns spent in Jail per player:" << std::endl;
+    Logger::info("\n========== Game Statistics ==========");
+    Logger::info("\nTurns spent in Jail per player:");
     for (unsigned int i = 0; i < _players.size(); ++i) {
-        std::cout << "\t" << _players[i].getDescription() << ": " << _gameStatistics.getTurnsSpentInJailPlayer(_players[i].getId()) << std::endl;
+        Logger::info("\t", _players[i].getDescription(), ": ", _gameStatistics.getTurnsSpentInJailPlayer(_players[i].getId()));
     }
 
-    std::cout << "\nTimes jailed per player:" << std::endl;
+    Logger::info("\nTimes jailed per player:");
     for (unsigned int i = 0; i < _players.size(); ++i) {
-        std::cout << "\t" << _players[i].getDescription() << ": " << _gameStatistics.getTimesJailedPlayer(_players[i].getId()) << std::endl;
+        Logger::info("\t", _players[i].getDescription(), ": ", _gameStatistics.getTimesJailedPlayer(_players[i].getId()));
     }
 
-    std::cout << "\nTotal turns per player:" << std::endl;
+    Logger::info("\nTotal turns per player:");
     for (unsigned int i = 0; i < _players.size(); ++i) {
-        std::cout << "\t" << _players[i].getDescription() << ": " << _gameStatistics.getTotalTurnsPlayer(_players[i].getId()) << std::endl;
+        Logger::info("\t", _players[i].getDescription(), ": ", _gameStatistics.getTotalTurnsPlayer(_players[i].getId()));
     }
     
-    std::cout << "\nTotal dice rolls per player:" << std::endl;
+    Logger::info("\nTotal dice rolls per player:");
     for (unsigned int i = 0; i < _players.size(); ++i) {
-        std::cout << "\t" << _players[i].getDescription() << ": " << _gameStatistics.getTotalDiceRollsPlayer(_players[i].getId()) << std::endl;
+        Logger::info("\t", _players[i].getDescription(), ": ", _gameStatistics.getTotalDiceRollsPlayer(_players[i].getId()));
     }
 
-    std::cout << "\nTotal doubles rolled per player:" << std::endl;
+    Logger::info("\nTotal doubles rolled per player:");
     for (unsigned int i = 0; i < _players.size(); ++i) {
-        std::cout << "\t" << _players[i].getDescription() << ": " << _gameStatistics.getTotalDoublesRolledPlayer(_players[i].getId()) << std::endl;
+        Logger::info("\t", _players[i].getDescription(), ": ", _gameStatistics.getTotalDoublesRolledPlayer(_players[i].getId()));
     }
 
-    std::cout << "\nTotal landings per square:" << std::endl;
+    Logger::info("\nTotal landings per square:");
     for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
         const BaseSquare &square = _board->getSquare(i);
-        std::cout << "\t" << square.getName() << " : " << _gameStatistics.getTotalLandingsSquare(i) << std::endl;
+        Logger::info("\t", square.getName(), " : ", _gameStatistics.getTotalLandingsSquare(i));
     }
 
 }
@@ -182,7 +183,7 @@ void Game::exportStatisticsToCSV(const std::string &playersFilename, const std::
     std::ofstream file(playersFilename);
 
     if (!file.is_open()) {
-        std::cerr << "Failed to open players file for writing: " << playersFilename << std::endl;
+        Logger::error("Failed to open players file for writing: ", playersFilename);
         return;
     }
 
@@ -201,7 +202,7 @@ void Game::exportStatisticsToCSV(const std::string &playersFilename, const std::
 
     file.open(squaresFilename);
     if (!file.is_open()) {
-        std::cerr << "Failed to open squares file for writing: " << squaresFilename << std::endl;
+        Logger::error("Failed to open squares file for writing: ", squaresFilename);
         return;
     }
 
@@ -217,20 +218,22 @@ void Game::exportStatisticsToCSV(const std::string &playersFilename, const std::
 void Game::runSimulation(unsigned int numTurns) {
     if (_players.empty() || _board == nullptr) {
         if (_players.empty()) {
-            std::cerr << "No players to simulate." << std::endl;
+            Logger::error("No players to simulate.");
         }
         if (_board == nullptr) {
-            std::cerr << "No board to simulate." << std::endl;
+            Logger::error("No board to simulate.");
         }
         return ;
     }
     _setupGameStatistics();
 
+    Logger::info("Starting simulation with ", numTurns, " turns.");
+
     for (unsigned int turn = 0; turn < numTurns; ++turn) {
         if (turn > 0) {
-            std::cout << std::endl;
+            Logger::info("");
         }
-        std::cout << "========== Turn " << (turn + 1) << " ==========" << std::endl;
+        Logger::info("========== Turn ", (turn + 1), " ==========");
         Player &currentPlayer = _players[_currentPlayerIndex];
         _playPlayerTurn(currentPlayer);
 

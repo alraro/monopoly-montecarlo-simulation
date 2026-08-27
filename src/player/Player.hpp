@@ -6,14 +6,12 @@
 
 class Player {
     private:
-        unsigned int _id;
-        std::string _name;
-        std::string _description;
-
-        unsigned int _currentSquare;
-        int _turnsLeftInJail;
-        unsigned int _doublesRolledInARow;
-
+        unsigned int                    _id;
+        std::string                     _name;
+        std::string                     _description;
+        unsigned int                    _currentSquare;
+        int                             _turnsLeftInJail;
+        unsigned int                    _doublesRolledInARow;
         std::shared_ptr<const Strategy> _strategy;
     public:
         Player(unsigned int id, const std::string &name, unsigned int currentSquare);

@@ -2,11 +2,13 @@
 #include "utils.hpp"
 #include <iostream>
 #include "BoardFactory.hpp"
+#include "Logger.hpp"
 
 int main() {
-    constexpr unsigned int TURNS = 10000;
-    constexpr unsigned int SEED = 123456;
-    std::cout << "Random seed: " << initRandom(SEED) << std::endl;
+    Logger::setLogLevel(LogLevel::None);
+    constexpr unsigned int TURNS = 10000000;
+    constexpr unsigned int SEED = 123456;\
+    Logger::info("Random seed: ", initRandom(SEED));
 
     Game game1 = Game().setDefaultBoard().addPlayer("Alice").addPlayer("Bob");
     game1.runSimulation(TURNS);
