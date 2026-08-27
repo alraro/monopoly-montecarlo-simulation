@@ -7,6 +7,7 @@ class StartSquare : public BaseSquare {
         StartSquare();
 
         EffectResult getSquareEffect(const Player &player) const override;
+        std::unique_ptr<BaseSquare> clone() const override;
 };
 
 #endif

@@ -15,10 +15,16 @@ class BaseSquare {
 
     public:
         virtual ~BaseSquare() = default;
+        BaseSquare(const BaseSquare&) = default;
+        BaseSquare& operator=(const BaseSquare&) = default;
+        BaseSquare(BaseSquare&&) = default;
+        BaseSquare& operator=(BaseSquare&&) = default;
         
         const std::string &getName() const;
         
         virtual EffectResult getSquareEffect(const Player &player) const = 0;
+
+        virtual std::unique_ptr<BaseSquare> clone() const = 0;
 };
 
 #endif

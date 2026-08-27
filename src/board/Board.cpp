@@ -3,6 +3,15 @@
 
 Board::Board(): _squares(), _jailSquareIndex(0) {}
 
+Board &Board::clone() const {
+    Board newBoard;
+    for (const auto &square : _squares) {
+        newBoard.addSquare(square->clone());
+    }
+    newBoard.setJailSquareIndex(_jailSquareIndex);
+    return newBoard;
+}
+
 void Board::addSquare(std::unique_ptr<BaseSquare> square) {
     if (square != nullptr) {
         this->_squares.push_back(std::move(square));

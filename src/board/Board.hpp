@@ -19,6 +19,8 @@ class Board {
         void setJailSquareIndex(unsigned int index);
 
         unsigned int getBoardSize() const;
+
+        Board &clone() const;
 };
 
 #endif
