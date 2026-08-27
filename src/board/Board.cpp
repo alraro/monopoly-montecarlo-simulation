@@ -1,5 +1,5 @@
 #include "Board.hpp"
-#include <iostream>
+#include "Logger.hpp"
 
 Board::Board(): _squares(), _jailSquareIndex(0) {}
 
@@ -24,7 +24,7 @@ void Board::addSquare(std::unique_ptr<BaseSquare> square) {
 
 void Board::printBoard() const {
     for (const auto &square : _squares) {
-        std::cout << square->getName() << std::endl;
+        Logger::info("Square: ", square->getName());
     }
 }
 

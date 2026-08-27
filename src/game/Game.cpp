@@ -2,7 +2,6 @@
 #include "utils.hpp"
 #include "BoardFactory.hpp"
 #include "effectType.hpp"
-#include <iostream>
 #include "rules.hpp"
 #include <fstream>
 #include "Logger.hpp"

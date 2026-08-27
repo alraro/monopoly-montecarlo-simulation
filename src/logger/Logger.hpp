@@ -1,5 +1,6 @@
 #ifndef LOGGER_HPP
 # define LOGGER_HPP
+# include <iostream>
 
 enum class LogLevel {
     None,

@@ -1,6 +1,5 @@
 #include "Game.hpp"
 #include "utils.hpp"
-#include <iostream>
 #include "BoardFactory.hpp"
 #include "Logger.hpp"
 
