@@ -7,11 +7,10 @@ MODULE_NAME  = monopoly
 
 OBJDIR       = obj
 
-BASEDIR      = .
-BOARDDIR     = board
-SQUARESDIR   = squares
+BASEDIR      = src
+BOARDDIR     = $(BASEDIR)/board
+SQUARESDIR   = $(BASEDIR)/squares
 
-# 1. Declarar los directorios de inclusión DESPUÉS de definir las carpetas
 INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
