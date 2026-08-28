@@ -178,11 +178,27 @@ void Game::printStatistics() const {
 
 }
 
-void Game::exportStatisticsToCSV(const std::string &playersFilename, const std::string &squaresFilename) const {
-    std::ofstream file(playersFilename);
+void Game::exportSquaresStatisticsToCSV(const std::string &filename) const {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        Logger::error("Failed to open squares file for writing: ", filename);
+        return;
+    }
+
+    file << "square_name,total_landings\n";
+    for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
+        const BaseSquare &square = _board->getSquare(i);
+        file << square.getName() << ","
+             << _gameStatistics.getTotalLandingsSquare(i) << "\n";
+    }
+    file.close();
+}
+
+void Game::exportPlayersStatisticsToCSV(const std::string &filename) const {
+    std::ofstream file(filename);
 
     if (!file.is_open()) {
-        Logger::error("Failed to open players file for writing: ", playersFilename);
+        Logger::error("Failed to open players file for writing: ", filename);
         return;
     }
 
@@ -199,19 +215,7 @@ void Game::exportStatisticsToCSV(const std::string &playersFilename, const std::
     }
     file.close();
 
-    file.open(squaresFilename);
-    if (!file.is_open()) {
-        Logger::error("Failed to open squares file for writing: ", squaresFilename);
-        return;
-    }
 
-    file << "square_name,total_landings\n";
-    for (unsigned int i = 0; i < _board->getBoardSize(); ++i) {
-        const BaseSquare &square = _board->getSquare(i);
-        file << square.getName() << ","
-             << _gameStatistics.getTotalLandingsSquare(i) << "\n";
-    }
-    file.close();
 }
 
 void Game::runSimulation(unsigned int numTurns) {

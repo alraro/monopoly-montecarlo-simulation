@@ -39,7 +39,7 @@ GAMESRC      = Game.cpp GameStatistics.cpp
 GAMEDEPS     = Game.hpp GameStatistics.hpp
 
 EXTRASRC     = utils.cpp
-EXTRADEPS    = utils.hpp effectType.hpp rules.hpp
+EXTRADEPS    = utils.hpp effectType.hpp rules.hpp simulationParams.hpp
 
 STRATEGYSRC  = 
 STRATEGYDEPS = Strategy.hpp

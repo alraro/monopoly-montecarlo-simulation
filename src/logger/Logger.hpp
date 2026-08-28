@@ -4,8 +4,8 @@
 
 enum class LogLevel {
     None,
-    Info,
     Error,
+    Info,
     Debug
 };
 
@@ -17,22 +17,27 @@ namespace Logger {
     template<typename... Args>
     void info(Args&&... args) {
         if (currentLevel >= LogLevel::Info) {
-            (std::cout << ... << args) << std::endl;
+            (std::cout << ... << args) << "\n";
         }
     }
 
     template<typename... Args>
     void debug(Args&&... args) {
         if (currentLevel >= LogLevel::Debug) {
-            (std::cout << ... << args) << std::endl;
+            (std::cout << ... << args) << "\n";
         }
     }
 
     template<typename... Args>
     void error(Args&&... args) {
-        if (currentLevel != LogLevel::None) {
-            (std::cerr << ... << args) << std::endl;
+        if (currentLevel >= LogLevel::Error) {
+            (std::cerr << ... << args) << "\n";
         }
+    }
+
+    template<typename... Args>
+    void log(Args&&... args) {
+        (std::cout << ... << args) << "\n";
     }
 
 }

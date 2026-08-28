@@ -43,7 +43,8 @@ class Game {
 
         void runSimulation(unsigned int numTurns);
         void printStatistics() const;
-        void exportStatisticsToCSV(const std::string &playersFilename, const std::string &squaresFilename) const;
+        void exportPlayersStatisticsToCSV(const std::string &filename) const;
+        void exportSquaresStatisticsToCSV(const std::string &filename) const;
 };
 
 #endif
