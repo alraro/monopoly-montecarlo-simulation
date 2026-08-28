@@ -5,6 +5,7 @@ enum class SquareEffectType {
     None,
     Move,
     GoToJail,
+    Pay,
 };
 
 struct SquareEffectResult {

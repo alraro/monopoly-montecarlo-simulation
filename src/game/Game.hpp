@@ -7,10 +7,12 @@
 # include "utils.hpp"
 # include <memory>
 # include "GameStatistics.hpp"
+# include "SimulationRules.hpp"
 
 class Game {
     private:
-        std::shared_ptr<const Board>    _board;
+        const SimulationRules          &_rules;
+        Board                           _board;
         std::vector<Player>             _players;
         unsigned int                    _currentPlayerIndex;
         GameStatistics                  _gameStatistics;
@@ -27,24 +29,17 @@ class Game {
 
         void _setupGameStatistics();
 
-
     public:
-        Game();
+        Game(const SimulationRules &rules);
 
-        Game &clear();
-
-        Game &addPlayer(const std::string &name);
-        Game &clearPlayers();
-
-        Game &setBoard(std::shared_ptr<const Board> board);
-        Game &setDefaultBoard();
-        Game &clearBoard();
-        const std::shared_ptr<const Board> &getBoard() const;
-
-        void runSimulation(unsigned int numTurns);
+        void play(unsigned int numTurns);
         void printStatistics() const;
         void exportPlayersStatisticsToCSV(const std::string &filename) const;
         void exportSquaresStatisticsToCSV(const std::string &filename) const;
 };
+
+Board getBoardFromRules(const SimulationRules &rules);
+GameStatistics getGameStatisticsFromRules(const SimulationRules &rules);
+std::vector<Player> getPlayersFromRules(const SimulationRules &rules);
 
 #endif

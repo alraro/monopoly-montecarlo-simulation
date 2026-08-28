@@ -22,18 +22,14 @@ INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 BASESRC      = main.cpp
 BASEDEPS     = 
 
-BOARDSRC     = Board.cpp BoardBuilder.cpp BoardFactory.cpp
-BOARDDEPS    = Board.hpp BoardBuilder.hpp BoardFactory.hpp
+BOARDSRC     =
+BOARDDEPS    = Board.hpp
 
-SQUARESSRC   = BaseSquare.cpp CommunitySquare.cpp GoToJailSquare.cpp \
-               JailSquare.cpp LuckSquare.cpp ParkingSquare.cpp \
-               PropertySquare.cpp StartSquare.cpp
-SQUARESDEPS  = BaseSquare.hpp CommunitySquare.hpp GoToJailSquare.hpp \
-               JailSquare.hpp LuckSquare.hpp ParkingSquare.hpp \
-               PropertySquare.hpp StartSquare.hpp
+SQUARESSRC   = 
+SQUARESDEPS  = SquareInfo.hpp Squares.hpp
 
-PLAYERSRC     = Player.cpp
-PLAYERDEPS    = Player.hpp
+PLAYERSRC     =
+PLAYERDEPS    = Player.hpp PlayerInfo.hpp
 
 GAMESRC      = Game.cpp GameStatistics.cpp
 GAMEDEPS     = Game.hpp GameStatistics.hpp
@@ -47,6 +43,9 @@ STRATEGYDEPS = Strategy.hpp BasicStrategy.hpp
 LOGGERSRC   = 
 LOGGERDEPS  = Logger.hpp
 
+SIMULATIONSRC  = Simulation.cpp
+SIMULATIONDEPS = Simulation.hpp SimulationRules.hpp
+
 SRC          = $(addprefix $(BASEDIR)/,     $(BASESRC)) \
                $(addprefix $(BOARDDIR)/,    $(BOARDSRC)) \
                $(addprefix $(PLAYERDIR)/,   $(PLAYERSRC)) \
@@ -55,6 +54,7 @@ SRC          = $(addprefix $(BASEDIR)/,     $(BASESRC)) \
                $(addprefix $(EXTRADIR)/,    $(EXTRASRC)) \
                $(addprefix $(LOGGERDIR)/,   $(LOGGERSRC)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
+               $(addprefix $(BASEDIR)/,     $(SIMULATIONSRC))
 
 DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
                $(addprefix $(BOARDDIR)/,    $(BOARDDEPS)) \
@@ -64,6 +64,7 @@ DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
                $(addprefix $(EXTRADIR)/,    $(EXTRADEPS)) \
                $(addprefix $(LOGGERDIR)/,   $(LOGGERDEPS)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYDEPS)) \
+               $(addprefix $(BASEDIR)/,     $(SIMULATIONDEPS))
 
 # Mapea cualquier src/archivo.cpp a obj/src/archivo.o de forma limpia
 OBJ          = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRC))

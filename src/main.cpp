@@ -1,8 +1,8 @@
 #include "Game.hpp"
 #include "utils.hpp"
-#include "BoardFactory.hpp"
 #include "Logger.hpp"
 #include "simulationParams.hpp"
+#include "Simulation.hpp"
 
 namespace {
     void setupSimulationParams(SimulationParams &params, int argc, char *argv[]) {
@@ -61,18 +61,13 @@ int main(int argc, char *argv[]) {
 
     Logger::setLogLevel(params.logLevel);
     Logger::info("Random seed: ", params.seed);
-
-    Game game1 = Game().setDefaultBoard().addPlayer("Alice").addPlayer("Bob");
-    game1.runSimulation(params.turns);
-    game1.printStatistics();
-
-    if (!params.playersStatisticsFilename.empty()) {
-        game1.exportPlayersStatisticsToCSV(params.playersStatisticsFilename);
-    }
     
-    if (!params.squaresStatisticsFilename.empty()) {
-        game1.exportSquaresStatisticsToCSV(params.squaresStatisticsFilename);
-    }
+    std::vector<SquareInfo> squares;
+    std::vector<PlayerInfo> players;
+
+    Simulation simulation(squares, players);
+
+    simulation.runMontecarloSimulation(params.turns);
 
     return 0;
 }
