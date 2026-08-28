@@ -4,8 +4,8 @@ PropertySquare::PropertySquare(): BaseSquare("Generic property") {}
 
 PropertySquare::PropertySquare(std::string name): BaseSquare(name) {}
 
-EffectResult PropertySquare::getSquareEffect(const Player &) const {
-    return {EffectType::None, 0};
+SquareEffectResult PropertySquare::getSquareEffect(const Player &) const {
+    return {SquareEffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> PropertySquare::clone() const {

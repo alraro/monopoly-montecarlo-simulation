@@ -2,8 +2,8 @@
 
 GoToJailSquare::GoToJailSquare(): BaseSquare("Go to Jail") {}
 
-EffectResult GoToJailSquare::getSquareEffect(const Player &) const {
-    return {EffectType::GoToJail, 0};
+SquareEffectResult GoToJailSquare::getSquareEffect(const Player &) const {
+    return {SquareEffectType::GoToJail, 0};
 }
 
 std::unique_ptr<BaseSquare> GoToJailSquare::clone() const {

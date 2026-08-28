@@ -1,7 +1,7 @@
 #include "Game.hpp"
 #include "utils.hpp"
 #include "BoardFactory.hpp"
-#include "effectType.hpp"
+#include "effects.hpp"
 #include "rules.hpp"
 #include <fstream>
 #include "Logger.hpp"
@@ -55,7 +55,7 @@ void Game::_sendPlayerToJail(Player &player) {
     Logger::info("Player ", player.getDescription(), " is sent to Jail!");
 }
 
-EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
+SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
     player.setCurrentSquare((player.getCurrentSquare() + diceRoll.total) % _board->getBoardSize());
     const BaseSquare &currentSquare = _board->getSquare(player.getCurrentSquare());
 
@@ -63,15 +63,15 @@ EffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult di
 
     Logger::info("Player ", player.getDescription(), " landed on square ", player.getCurrentSquare(), " (", currentSquare.getName(), ").");
 
-    EffectResult effect = currentSquare.getSquareEffect(player);
+    SquareEffectResult effect = currentSquare.getSquareEffect(player);
     switch (effect.type) {
-        case EffectType::GoToJail:
+        case SquareEffectType::GoToJail:
             _sendPlayerToJail(player);
             break;
-        case EffectType::None:
+        case SquareEffectType::None:
             // No special effect
             break;
-        case EffectType::Move:
+        case SquareEffectType::Move:
             // Handle move effect if needed
             break;
     }
@@ -92,9 +92,9 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
         Logger::info("Player ", player.getDescription(), " rolled doubles three times in a row and is sent to Jail!");
         _sendPlayerToJail(player);
     } else {
-        EffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
+        SquareEffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
 
-        if (!wasInJail && appliedEffect.type != EffectType::GoToJail) {
+        if (!wasInJail && appliedEffect.type != SquareEffectType::GoToJail) {
             Logger::info("Player ", player.getDescription(), " rolled doubles and gets another turn!");
             _playPlayerTurn(player);
         }
@@ -103,8 +103,8 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
 
 void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll) {
     player.resetDoublesRolled();
-    EffectResult appliedEffect;
-    appliedEffect.type = EffectType::None;
+    SquareEffectResult appliedEffect;
+    appliedEffect.type = SquareEffectType::None;
     appliedEffect.value = 0;
 
     if (player.isInJail()) {
@@ -112,7 +112,7 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
     } else {
         appliedEffect = _movePlayerDiceRoll(player, diceRoll);
     }
-    if (appliedEffect.type != EffectType::GoToJail) {
+    if (appliedEffect.type != SquareEffectType::GoToJail) {
         player.decrementTurnsLeftInJail();
     }
 }

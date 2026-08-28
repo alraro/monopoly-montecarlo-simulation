@@ -10,6 +10,8 @@ class Strategy {
         Strategy& operator=(const Strategy&) = default;
         Strategy(Strategy&&) noexcept = default;
         Strategy& operator=(Strategy&&) noexcept = default;
+
+        
 };
 
 #endif

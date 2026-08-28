@@ -3,7 +3,7 @@
 # include <vector>
 # include "Board.hpp"
 # include "Player.hpp"
-# include "effectType.hpp"
+# include "effects.hpp"
 # include "utils.hpp"
 # include <memory>
 # include "GameStatistics.hpp"
@@ -18,7 +18,7 @@ class Game {
         void _showSquareLandingInfo() const;
         void _sendPlayerToJail(Player &player);
 
-        EffectResult _movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll);
+        SquareEffectResult _movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll);
 
         void _playPlayerTurn(Player &player);
 

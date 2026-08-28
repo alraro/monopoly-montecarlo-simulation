@@ -8,7 +8,7 @@ class PropertySquare : public BaseSquare {
 
         PropertySquare(std::string name);
 
-        EffectResult getSquareEffect(const Player &player) const override;
+        SquareEffectResult getSquareEffect(const Player &player) const override;
         std::unique_ptr<BaseSquare> clone() const override;
 };
 

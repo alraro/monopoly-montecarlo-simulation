@@ -6,7 +6,7 @@ class ParkingSquare: public BaseSquare {
     public:
         ParkingSquare();
 
-        EffectResult getSquareEffect(const Player &player) const override;
+        SquareEffectResult getSquareEffect(const Player &player) const override;
         virtual std::unique_ptr<BaseSquare> clone() const override;
 };
 

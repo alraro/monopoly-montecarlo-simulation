@@ -2,8 +2,8 @@
 
 StartSquare::StartSquare(): BaseSquare("Start") {}
 
-EffectResult StartSquare::getSquareEffect(const Player &) const {
-    return {EffectType::None, 0};
+SquareEffectResult StartSquare::getSquareEffect(const Player &) const {
+    return {SquareEffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> StartSquare::clone() const {

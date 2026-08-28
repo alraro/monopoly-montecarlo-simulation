@@ -2,8 +2,8 @@
 
 ParkingSquare::ParkingSquare(): BaseSquare("Parking") {}
 
-EffectResult ParkingSquare::getSquareEffect(const Player &) const {
-    return {EffectType::None, 0};
+SquareEffectResult ParkingSquare::getSquareEffect(const Player &) const {
+    return {SquareEffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> ParkingSquare::clone() const {

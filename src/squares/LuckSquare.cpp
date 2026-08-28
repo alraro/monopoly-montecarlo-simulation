@@ -2,8 +2,8 @@
 
 LuckSquare::LuckSquare(): BaseSquare("Luck") {}
 
-EffectResult LuckSquare::getSquareEffect(const Player &) const {
-    return {EffectType::None, 0};
+SquareEffectResult LuckSquare::getSquareEffect(const Player &) const {
+    return {SquareEffectType::None, 0};
 }
 
 std::unique_ptr<BaseSquare> LuckSquare::clone() const {
