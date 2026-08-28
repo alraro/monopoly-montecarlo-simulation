@@ -1,7 +1,7 @@
 #include "Player.hpp"
 #include "rules.hpp"
 
-Player::Player(unsigned int id, const std::string &name, unsigned int currentSquare, unsigned int startingMoney): 
+Player::Player(unsigned int id, const std::string &name, unsigned int currentSquare, int64_t startingMoney): 
                     _id(id),
                     _name(name),
                     _description("[ID: " + std::to_string(id) + ", Name: " + name + "]"),
