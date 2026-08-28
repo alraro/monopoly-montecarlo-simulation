@@ -41,8 +41,8 @@ GAMEDEPS     = Game.hpp GameStatistics.hpp
 EXTRASRC     = utils.cpp
 EXTRADEPS    = utils.hpp effects.hpp rules.hpp simulationParams.hpp
 
-STRATEGYSRC  = 
-STRATEGYDEPS = Strategy.hpp
+STRATEGYSRC  = BasicStrategy.cpp
+STRATEGYDEPS = Strategy.hpp BasicStrategy.hpp
 
 LOGGERSRC   = 
 LOGGERDEPS  = Logger.hpp

@@ -1,5 +1,6 @@
 #include "Player.hpp"
 #include "rules.hpp"
+#include "BasicStrategy.hpp"
 
 Player::Player(unsigned int id, const std::string &name, unsigned int currentSquare, int64_t startingMoney): 
                     _id(id),
@@ -9,7 +10,8 @@ Player::Player(unsigned int id, const std::string &name, unsigned int currentSqu
                     _turnsLeftInJail(0),
                     _doublesRolledInARow(0),
                     _currentMoney(startingMoney),
-                    _squaresOwned() {}
+                    _squaresOwned(),
+                    _strategy(BasicStrategy::getInstance()) {}
 
 void Player::setCurrentSquare(unsigned int square) {
     _currentSquare = square;

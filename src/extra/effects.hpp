@@ -14,7 +14,6 @@ struct SquareEffectResult {
 
 enum class PlayerStrategyActionType {
     DoNothing,
-    BuyProperty,
     BuildHouse,
     SellHouse,
     MortgageProperty,
