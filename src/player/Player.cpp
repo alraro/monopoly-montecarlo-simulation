@@ -1,13 +1,15 @@
 #include "Player.hpp"
 #include "rules.hpp"
 
-Player::Player(unsigned int id, const std::string &name, unsigned int currentSquare): 
+Player::Player(unsigned int id, const std::string &name, unsigned int currentSquare, unsigned int startingMoney): 
                     _id(id),
                     _name(name),
                     _description("[ID: " + std::to_string(id) + ", Name: " + name + "]"),
                     _currentSquare(currentSquare),
                     _turnsLeftInJail(0),
-                    _doublesRolledInARow(0) {}
+                    _doublesRolledInARow(0),
+                    _currentMoney(startingMoney),
+                    _squaresOwned() {}
 
 void Player::setCurrentSquare(unsigned int square) {
     _currentSquare = square;

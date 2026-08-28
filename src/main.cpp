@@ -21,19 +21,21 @@ namespace {
             }
 
             if (arg == "turns" && i + 1 < argc) {
-                params.turns = std::stoi(argv[++i]);
+                params.turns = std::stoull(argv[++i]);
             } else if (arg == "seed" && i + 1 < argc) {
-                params.seed = std::stoi(argv[++i]);
+                params.seed = std::stoull(argv[++i]);
             } else if (arg == "log-level" && i + 1 < argc) {
                 std::string level = argv[++i];
                 if (level == "none") {
-                    Logger::setLogLevel(LogLevel::None);
+                    params.logLevel = LogLevel::None;
+                } else if (level == "progress") {
+                    params.logLevel = LogLevel::Progress;
                 } else if (level == "info") {
-                    Logger::setLogLevel(LogLevel::Info);
+                    params.logLevel = LogLevel::Info;
                 } else if (level == "error") {
-                    Logger::setLogLevel(LogLevel::Error);
+                    params.logLevel = LogLevel::Error;
                 } else if (level == "debug") {
-                    Logger::setLogLevel(LogLevel::Debug);
+                    params.logLevel = LogLevel::Debug;
                 } else {
                     Logger::error("Unknown log level: ", level, " <none|info|error|debug>");
                     exit(1);

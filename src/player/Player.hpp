@@ -3,6 +3,7 @@
 # include <string>
 # include <memory>
 # include "Strategy.hpp"
+# include <vector>
 
 class Player {
     private:
@@ -12,9 +13,12 @@ class Player {
         unsigned int                    _currentSquare;
         int                             _turnsLeftInJail;
         unsigned int                    _doublesRolledInARow;
+
+        unsigned int                    _currentMoney;
+        std::vector<unsigned int>       _squaresOwned;
         std::shared_ptr<const Strategy> _strategy;
     public:
-        Player(unsigned int id, const std::string &name, unsigned int currentSquare);
+        Player(unsigned int id, const std::string &name, unsigned int startingSquare, unsigned int startingMoney);
         void setCurrentSquare(unsigned int square);
         unsigned int getCurrentSquare() const;
 

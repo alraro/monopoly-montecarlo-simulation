@@ -15,7 +15,7 @@ Game &Game::clear() {
 }
 
 Game &Game::addPlayer(const std::string &name) {
-    _players.emplace_back(_players.size(), name, 0);
+    _players.emplace_back(_players.size(), name, 0, rules::STARTING_MONEY);
     return *this;
 }
 
@@ -237,6 +237,7 @@ void Game::runSimulation(unsigned int numTurns) {
             Logger::info("");
         }
         Logger::info("========== Turn ", (turn + 1), " ==========");
+        Logger::progress(turn, numTurns);
         Player &currentPlayer = _players[_currentPlayerIndex];
         _playPlayerTurn(currentPlayer);
 
