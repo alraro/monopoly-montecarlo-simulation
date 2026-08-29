@@ -13,6 +13,7 @@ struct SimulationParams {
     LogLevel logLevel = DEFAULT_LOG_LEVEL;
     std::string playersStatisticsFilename = "";
     std::string squaresStatisticsFilename = "";
+    bool runInParallel = false;
 };
 
 #endif

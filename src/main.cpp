@@ -1,5 +1,4 @@
 #include "Game.hpp"
-#include "utils.hpp"
 #include "Logger.hpp"
 #include "simulationParams.hpp"
 #include "Simulation.hpp"
@@ -47,6 +46,8 @@ namespace {
             } else if (arg == "help" || arg == "h") {
                 Logger::log("Usage: ", argv[0], " [--turns <number_of_turns>] [--seed <random_seed>] [--log-level <none|info|error|debug>] [--help | -h]");
                 exit(0);
+            } else if (arg == "parallel") {
+                params.runInParallel = true;
             } else {
                 Logger::error("Unknown argument: ", arg, ".\nCheck ", argv[0], " --help for usage.");
                 exit(1);
@@ -62,12 +63,27 @@ int main(int argc, char *argv[]) {
     Logger::setLogLevel(params.logLevel);
     Logger::info("Random seed: ", params.seed);
     
-    std::vector<SquareInfo> squares;
     std::vector<PlayerInfo> players;
+    
+    players.emplace_back(0, "Player 1");
+    players.emplace_back(1, "Player 2");
 
+    std::vector<SquareInfo> squares;
+    squares.emplace_back("Start", SquareType::Start);
+    squares.emplace_back("Property 1", SquareType::Property);
+    squares.emplace_back("Community Chest", SquareType::Community);
+    squares.emplace_back("Property 2", SquareType::Property);
+    squares.emplace_back("Go To Jail", SquareType::GoToJail);
+    squares.emplace_back("Jail", SquareType::Jail);
+    squares.emplace_back("Property 3", SquareType::Property);
+    
     Simulation simulation(squares, players);
 
-    simulation.runMontecarloSimulation(params.turns);
+    if (params.runInParallel) {
+        simulation.runParallelMontecarloSimulation(120);
+    } else {
+        simulation.runSequentialMontecarloSimulation(120);
+    }
 
     return 0;
 }

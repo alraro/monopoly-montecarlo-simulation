@@ -1,6 +1,6 @@
-#ifndef TYPES_HPP
-# define TYPES_HPP
-# include <cstdint>
+#pragma once
+#include <cstdint>
+
 
 using PlayerId =    uint32_t;
 using SquareId =    uint32_t;
@@ -20,8 +20,4 @@ struct PlayerStats {
     StatCount totalTurns{0};
     StatCount totalDiceRolls{0};
     StatCount totalDoublesRolled{0};
-}
-
-
-
-#endif
+};

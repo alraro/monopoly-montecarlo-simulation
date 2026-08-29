@@ -9,6 +9,7 @@ class GameStatistics {
         std::vector<StatCount>      _squareLandings;
     public:
         GameStatistics() = default;
+        GameStatistics(size_t numPlayers, size_t numSquares) : _playerStats(numPlayers), _squareLandings(numSquares, 0) {}
 
         void recordTurnInJailPlayer(PlayerId playerIndex) {
             ++_playerStats[playerIndex].turnsSpentInJail;
@@ -37,8 +38,8 @@ class GameStatistics {
             return _playerStats[playerIndex];
         }
 
-        const std::vector<StatCount>& getSquareLandings() const {
-            return _squareLandings;
+        const StatCount& getSquareLandings(SquareId squareIndex) const {
+            return _squareLandings[squareIndex];
         }
 
         const std::vector<PlayerStats>& getAllPlayerStats() const {

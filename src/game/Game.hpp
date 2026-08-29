@@ -33,7 +33,7 @@ class Game {
     public:
         Game(const SimulationRules &rules);
 
-        void play(unsigned int numTurns);
+        void play(size_t numTurns);
         void printStatistics() const;
         void exportPlayersStatisticsToCSV(const std::string &filename) const;
         void exportSquaresStatisticsToCSV(const std::string &filename) const;

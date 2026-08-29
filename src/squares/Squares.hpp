@@ -4,7 +4,7 @@
 # include "Player.hpp"
 # include "SimulationRules.hpp"
 # include <variant>
-// # include <optional>
+# include <optional>
 
 struct PropertySquare {
     std::optional<unsigned int> ownerId{std::nullopt};
@@ -16,7 +16,7 @@ struct PropertySquare {
         if (!ownerId.has_value() || ownerId == player.id || isMortgaged) {
             return {SquareEffectType::None, 0};
         } else {
-            int rent = rules.squares[player.currentSquare].rent[hotelBuilt ? 5 : std::min(housesBuilt, 4)];
+            int rent = rules.squares[player.currentSquare].rent[hotelBuilt ? 5 : std::min(housesBuilt, 4u)];
             return {SquareEffectType::Pay, rent};
         }
     }
@@ -70,7 +70,21 @@ struct StartSquare {
     }
 };
 
-using Square = std::variant<PropertySquare, CommunitySquare, GoToJailSquare, JailSquare, LuckSquare, ParkingSquare, StartSquare>;
+using Square = std::variant<
+    PropertySquare,
+    CommunitySquare,
+    GoToJailSquare,
+    JailSquare,
+    LuckSquare,
+    ParkingSquare,
+    StartSquare
+>;
+
+inline SquareEffectResult getSquareEffect(const Square &square, const Player &player, const SimulationRules &rules) {
+    return std::visit([&](const auto& sq) {
+        return sq.getSquareEffect(player, rules);
+    }, square);
+}
 
 
 #endif
