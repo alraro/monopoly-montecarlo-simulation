@@ -15,8 +15,9 @@ GAMEDIR      = $(BASEDIR)/game
 EXTRADIR     = $(BASEDIR)/extra
 STRATEGYDIR  = $(BASEDIR)/strategy
 LOGGERDIR    = $(BASEDIR)/logger
+SIMULATIONDIR = $(BASEDIR)/simulation
 
-INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR)
+INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR) $(SIMULATIONDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
 BASESRC      = main.cpp
@@ -31,11 +32,11 @@ SQUARESDEPS  = SquareInfo.hpp Squares.hpp
 PLAYERSRC     =
 PLAYERDEPS    = Player.hpp PlayerInfo.hpp
 
-GAMESRC      = Game.cpp GameStatistics.cpp
+GAMESRC      = Game.cpp
 GAMEDEPS     = Game.hpp GameStatistics.hpp
 
-EXTRASRC     = utils.cpp
-EXTRADEPS    = utils.hpp effects.hpp rules.hpp simulationParams.hpp
+EXTRASRC     =
+EXTRADEPS    = Dice.hpp Types.hpp effects.hpp rules.hpp simulationParams.hpp
 
 STRATEGYSRC  = BasicStrategy.cpp
 STRATEGYDEPS = Strategy.hpp BasicStrategy.hpp
@@ -54,7 +55,7 @@ SRC          = $(addprefix $(BASEDIR)/,     $(BASESRC)) \
                $(addprefix $(EXTRADIR)/,    $(EXTRASRC)) \
                $(addprefix $(LOGGERDIR)/,   $(LOGGERSRC)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
-               $(addprefix $(BASEDIR)/,     $(SIMULATIONSRC))
+               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC))
 
 DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
                $(addprefix $(BOARDDIR)/,    $(BOARDDEPS)) \
@@ -64,7 +65,7 @@ DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
                $(addprefix $(EXTRADIR)/,    $(EXTRADEPS)) \
                $(addprefix $(LOGGERDIR)/,   $(LOGGERDEPS)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYDEPS)) \
-               $(addprefix $(BASEDIR)/,     $(SIMULATIONDEPS))
+               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONDEPS))
 
 # Mapea cualquier src/archivo.cpp a obj/src/archivo.o de forma limpia
 OBJ          = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRC))

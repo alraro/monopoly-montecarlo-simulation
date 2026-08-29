@@ -1,21 +1,22 @@
 #ifndef GAME_HPP
 # define GAME_HPP
 # include <vector>
+# include <memory>
 # include "Board.hpp"
 # include "Player.hpp"
 # include "effects.hpp"
-# include "utils.hpp"
-# include <memory>
 # include "GameStatistics.hpp"
 # include "SimulationRules.hpp"
+# include "Dice.hpp"
 
 class Game {
     private:
         const SimulationRules          &_rules;
         Board                           _board;
         std::vector<Player>             _players;
-        unsigned int                    _currentPlayerIndex;
+        PlayerId                        _currentPlayerIndex;
         GameStatistics                  _gameStatistics;
+        Dice                            _dice;
 
         void _showSquareLandingInfo() const;
         void _sendPlayerToJail(Player &player);

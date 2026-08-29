@@ -1,40 +1,53 @@
 #ifndef GAMESTATISTICS_HPP
 # define GAMESTATISTICS_HPP
 # include <vector>
-# include "utils.hpp"
+# include "Types.hpp"
 
 class GameStatistics {
     private:
-        std::vector<unsigned int> _turnsSpentInJailPerPlayer;
-        std::vector<unsigned int> _timesJailedPerPlayer;
-        std::vector<unsigned int> _totalTurnsPerPlayer;
-        std::vector<unsigned int> _totalDoublesRolledPerPlayer;
-        std::vector<unsigned int> _totalDiceRollsPerPlayer;
-        std::vector<unsigned int> _totalLandingsPerSquare;
+        std::vector<PlayerStats>    _playerStats;
+        std::vector<StatCount>      _squareLandings;
     public:
-        GameStatistics();
+        GameStatistics() = default;
 
-        void setPlayerCount(unsigned int numPlayers);
-        void setSquareCount(unsigned int numSquares);
+        void recordTurnInJailPlayer(PlayerId playerIndex) {
+            ++_playerStats[playerIndex].turnsSpentInJail;
+        }
 
-        void recordTurnInJailPlayer(unsigned int playerIndex);
-        unsigned int getTurnsSpentInJailPlayer(unsigned int playerIndex) const;
+        void recordTimesJailedPlayer(PlayerId playerIndex) {
+            ++_playerStats[playerIndex].timesJailed;
+        }
 
-        void recordTimesJailedPlayer(unsigned int playerIndex);
-        unsigned int getTimesJailedPlayer(unsigned int playerIndex) const;
+        void recordTurnPlayer(PlayerId playerIndex) {
+            ++_playerStats[playerIndex].totalTurns;
+        }
 
-        void recordTurnPlayer(unsigned int playerIndex);
-        unsigned int getTotalTurnsPlayer(unsigned int playerIndex) const;
+        void recordDiceRollPlayer(PlayerId playerIndex, MonopolyDiceRollResult diceRoll) {
+            ++_playerStats[playerIndex].totalDiceRolls;
+            if (diceRoll.areDoubles()) {
+                ++_playerStats[playerIndex].totalDoublesRolled;
+            }
+        };
 
-        void recordDiceRollPlayer(unsigned int playerIndex, MonopolyDiceRollResult diceRoll);
-        unsigned int getTotalDiceRollsPlayer(unsigned int playerIndex) const;
-        unsigned int getTotalDoublesRolledPlayer(unsigned int playerIndex) const;
-
-        void recordLandingSquare(unsigned int squareIndex);
-        unsigned int getTotalLandingsSquare(unsigned int squareIndex) const;
-
+        void recordLandingSquare(PlayerId squareIndex) {
+            ++_squareLandings[squareIndex];
+        }
         
+        const PlayerStats& getPlayerStats(PlayerId playerIndex) const {
+            return _playerStats[playerIndex];
+        }
 
+        const std::vector<StatCount>& getSquareLandings() const {
+            return _squareLandings;
+        }
+
+        const std::vector<PlayerStats>& getAllPlayerStats() const {
+            return _playerStats;
+        }
+
+        const std::vector<StatCount>& getAllSquareLandings() const {
+            return _squareLandings;
+        }
 };
 
 #endif

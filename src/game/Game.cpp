@@ -1,9 +1,8 @@
+#include <fstream>
 #include "Game.hpp"
-#include "utils.hpp"
 #include "Squares.hpp"
 #include "effects.hpp"
 #include "rules.hpp"
-#include <fstream>
 #include "Logger.hpp"
 
 Game::Game(const SimulationRules &rules): 
@@ -11,12 +10,11 @@ Game::Game(const SimulationRules &rules):
             _board(getBoardFromRules(rules)),
             _players(getPlayersFromRules(rules)),
             _currentPlayerIndex(0),
-            _gameStatistics(getGameStatisticsFromRules(rules)) {}
+            _gameStatistics(getGameStatisticsFromRules(rules)),
+            _dice() {}
 
 void Game::_sendPlayerToJail(Player &player) {
-    player.currentSquare = _board.jailSquareIndex;
-    player.turnsLeftInJail = rules::TURNS_IN_JAIL;
-    player.doublesRolledInARow = 0;
+    player.sendToJail(_board.jailSquareIndex);
 
     this->_gameStatistics.recordTimesJailedPlayer(player.id);
     Logger::debug("[DEBUG] Player ", _rules.players[player.id].name, "'s times jailed count is now ", _gameStatistics.getTimesJailedPlayer(player.id));
@@ -25,7 +23,7 @@ void Game::_sendPlayerToJail(Player &player) {
 }
 
 SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
-    player.currentSquare = ((player.currentSquare + diceRoll.total) % _board.squares.size());
+    player.moveToSquare((player.currentSquare + diceRoll.total) % _board.squares.size());
     const Square &currentSquare = _board.squares[player.currentSquare];
 
     this->_gameStatistics.recordLandingSquare(player.currentSquare);
@@ -42,6 +40,9 @@ SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollRes
             break;
         case SquareEffectType::Move:
             // Handle move effect if needed
+            break;
+        case SquareEffectType::Pay:
+            // Handle pay effect if needed
             break;
     }
     return effect;
@@ -107,11 +108,6 @@ void Game::_playPlayerTurn(Player &player) {
     }
 }
 
-void Game::_setupGameStatistics() {
-    _gameStatistics.setPlayerCount(_players.size());
-    _gameStatistics.setSquareCount(_board.squares.size());
-}
-
 void Game::printStatistics() const {
     Logger::info("\n========== Game Statistics ==========");
     Logger::info("\nTurns spent in Jail per player:");
@@ -141,7 +137,6 @@ void Game::printStatistics() const {
 
     Logger::info("\nTotal landings per square:");
     for (unsigned int i = 0; i < _board.squares.size(); ++i) {
-        const Square &square = _board.squares[i];
         Logger::info("\t", _rules.squares[i].name, " : ", _gameStatistics.getTotalLandingsSquare(i));
     }
 
@@ -156,7 +151,6 @@ void Game::exportSquaresStatisticsToCSV(const std::string &filename) const {
 
     file << "square_name,total_landings\n";
     for (unsigned int i = 0; i < _board.squares.size(); ++i) {
-        const Square &square = _board.squares[i];
         file << _rules.squares[i].name << ","
              << _gameStatistics.getTotalLandingsSquare(i) << "\n";
     }
