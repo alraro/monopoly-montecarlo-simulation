@@ -4,7 +4,7 @@
 #include "Simulation.hpp"
 
 namespace {
-    void setupSimulationParams(SimulationParams &params, int argc, char *argv[]) {
+    void setupSimulationParams(SimulationConfig &params, int argc, char *argv[]) {
         Logger::debug("Setting up simulation parameters...");
 
         for (int i = 1; i < argc; ++i) {
@@ -57,7 +57,7 @@ namespace {
 }
 
 int main(int argc, char *argv[]) {
-    SimulationParams params;
+    SimulationConfig params;
     setupSimulationParams(params, argc, argv);
 
     Logger::setLogLevel(params.logLevel);

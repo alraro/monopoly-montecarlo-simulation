@@ -67,7 +67,6 @@ DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYDEPS)) \
                $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONDEPS))
 
-# Mapea cualquier src/archivo.cpp a obj/src/archivo.o de forma limpia
 OBJ          = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRC))
 
 all: $(NAME)
@@ -76,7 +75,6 @@ $(NAME): $(OBJ)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@echo "${MODULE_NAME} compiled successfully!"
 
-# 2. Regla genérica que captura archivos en subcarpetas
 $(OBJDIR)/%.o: %.cpp $(DEPS)
 	@mkdir -p $(dir $@)
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
