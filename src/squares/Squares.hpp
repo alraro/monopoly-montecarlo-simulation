@@ -2,7 +2,7 @@
 # define SQUARES_HPP
 # include "effects.hpp"
 # include "Player.hpp"
-# include "SimulationRules.hpp"
+# include "SimulationConfig.hpp"
 # include <variant>
 # include <optional>
 
@@ -12,7 +12,7 @@ struct PropertySquare {
     bool hotelBuilt = false;
     bool isMortgaged = false;
 
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         if (!ownerId.has_value() || ownerId == player.id || isMortgaged) {
             return {SquareEffectType::None, 0};
         } else {
@@ -23,7 +23,7 @@ struct PropertySquare {
 };
 
 struct CommunitySquare {
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         (void)player; // Unused parameter
         (void)rules;  // Unused parameter
         return {SquareEffectType::None, 0}; //TODO: Implement community square effects
@@ -31,7 +31,7 @@ struct CommunitySquare {
 };
 
 struct GoToJailSquare {
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         (void)player; // Unused parameter
         (void)rules;  // Unused parameter
         return {SquareEffectType::GoToJail, 0};
@@ -39,7 +39,7 @@ struct GoToJailSquare {
 };
 
 struct JailSquare {
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         (void)player; // Unused parameter
         (void)rules;  // Unused parameter
         return {SquareEffectType::None, 0};
@@ -47,7 +47,7 @@ struct JailSquare {
 };
 
 struct LuckSquare {
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         (void)player; // Unused parameter
         (void)rules;  // Unused parameter
         return {SquareEffectType::None, 0}; //TODO: Implement luck square effects
@@ -55,7 +55,7 @@ struct LuckSquare {
 };
 
 struct ParkingSquare {
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         (void)player; // Unused parameter
         (void)rules;  // Unused parameter
         return {SquareEffectType::None, 0}; //TODO: Implement parking square effects
@@ -63,7 +63,7 @@ struct ParkingSquare {
 };
 
 struct StartSquare {
-    SquareEffectResult getSquareEffect(const Player &player, const SimulationRules &rules) const {
+    SquareEffectResult getSquareEffect(const Player &player, const SimulationConfig &rules) const {
         (void)player; // Unused parameter
         (void)rules;  // Unused parameter
         return {SquareEffectType::None, 0}; //TODO: Implement start square effects
@@ -80,7 +80,7 @@ using Square = std::variant<
     StartSquare
 >;
 
-inline SquareEffectResult getSquareEffect(const Square &square, const Player &player, const SimulationRules &rules) {
+inline SquareEffectResult getSquareEffect(const Square &square, const Player &player, const SimulationConfig &rules) {
     return std::visit([&](const auto& sq) {
         return sq.getSquareEffect(player, rules);
     }, square);

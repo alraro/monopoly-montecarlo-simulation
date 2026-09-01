@@ -1,73 +1,49 @@
 CXX          = c++
-CXXFLAGS     = -Wall -Wextra -Werror -std=c++23
+CXXFLAGS     = -Wall -Wextra -Werror -std=c++23 -MMD -MP
 MAKEFLAGS    = -j$(shell nproc)
 
 NAME         = monopoly
 MODULE_NAME  = monopoly
 
 OBJDIR       = obj
-
 BASEDIR      = src
-BOARDDIR     = $(BASEDIR)/board
-SQUARESDIR   = $(BASEDIR)/squares
-PLAYERDIR    = $(BASEDIR)/player
-GAMEDIR      = $(BASEDIR)/game
-EXTRADIR     = $(BASEDIR)/extra
-STRATEGYDIR  = $(BASEDIR)/strategy
-LOGGERDIR    = $(BASEDIR)/logger
+
+BOARDDIR      = $(BASEDIR)/board
+SQUARESDIR    = $(BASEDIR)/squares
+PLAYERDIR     = $(BASEDIR)/player
+GAMEDIR       = $(BASEDIR)/game
+EXTRADIR      = $(BASEDIR)/extra
+STRATEGYDIR   = $(BASEDIR)/strategy
+LOGGERDIR     = $(BASEDIR)/logger
 SIMULATIONDIR = $(BASEDIR)/simulation
 
 INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR) $(SIMULATIONDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
-BASESRC      = main.cpp
-BASEDEPS     = 
-
-BOARDSRC     =
-BOARDDEPS    = Board.hpp
-
-SQUARESSRC   = 
-SQUARESDEPS  = SquareInfo.hpp Squares.hpp
-
+BASESRC       = main.cpp
+BOARDSRC      =
+SQUARESSRC    =
 PLAYERSRC     =
-PLAYERDEPS    = Player.hpp PlayerInfo.hpp
+GAMESRC       = Game.cpp
+EXTRASRC      =
+STRATEGYSRC   = BasicStrategy.cpp
+LOGGERSRC     =
+SIMULATIONSRC = Simulation.cpp
 
-GAMESRC      = Game.cpp
-GAMEDEPS     = Game.hpp GameStatistics.hpp
-
-EXTRASRC     =
-EXTRADEPS    = Dice.hpp Types.hpp effects.hpp rules.hpp simulationParams.hpp
-
-STRATEGYSRC  = BasicStrategy.cpp
-STRATEGYDEPS = Strategy.hpp BasicStrategy.hpp
-
-LOGGERSRC   = 
-LOGGERDEPS  = Logger.hpp
-
-SIMULATIONSRC  = Simulation.cpp
-SIMULATIONDEPS = Simulation.hpp SimulationRules.hpp
-
-SRC          = $(addprefix $(BASEDIR)/,     $(BASESRC)) \
-               $(addprefix $(BOARDDIR)/,    $(BOARDSRC)) \
-               $(addprefix $(PLAYERDIR)/,   $(PLAYERSRC)) \
-               $(addprefix $(SQUARESDIR)/,  $(SQUARESSRC)) \
-               $(addprefix $(GAMEDIR)/,     $(GAMESRC)) \
-               $(addprefix $(EXTRADIR)/,    $(EXTRASRC)) \
-               $(addprefix $(LOGGERDIR)/,   $(LOGGERSRC)) \
+# Se filtran elementos vacíos para evitar rutas inválidas
+SRC          = $(strip \
+               $(addprefix $(BASEDIR)/, $(BASESRC)) \
+               $(addprefix $(BOARDDIR)/, $(BOARDSRC)) \
+               $(addprefix $(PLAYERDIR)/, $(PLAYERSRC)) \
+               $(addprefix $(SQUARESDIR)/, $(SQUARESSRC)) \
+               $(addprefix $(GAMEDIR)/, $(GAMESRC)) \
+               $(addprefix $(EXTRADIR)/, $(EXTRASRC)) \
+               $(addprefix $(LOGGERDIR)/, $(LOGGERSRC)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
-               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC))
+               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC)))
 
-DEPS         = $(addprefix $(BASEDIR)/,     $(BASEDEPS)) \
-               $(addprefix $(BOARDDIR)/,    $(BOARDDEPS)) \
-               $(addprefix $(PLAYERDIR)/,   $(PLAYERDEPS)) \
-               $(addprefix $(SQUARESDIR)/,  $(SQUARESDEPS)) \
-               $(addprefix $(GAMEDIR)/,     $(GAMEDEPS)) \
-               $(addprefix $(EXTRADIR)/,    $(EXTRADEPS)) \
-               $(addprefix $(LOGGERDIR)/,   $(LOGGERDEPS)) \
-               $(addprefix $(STRATEGYDIR)/, $(STRATEGYDEPS)) \
-               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONDEPS))
-
-OBJ          = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRC))
+OBJ          = $(SRC:%.cpp=$(OBJDIR)/%.o)
+DEP_FILES    = $(OBJ:.o=.d)
 
 all: $(NAME)
 
@@ -75,10 +51,13 @@ $(NAME): $(OBJ)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@echo "${MODULE_NAME} compiled successfully!"
 
-$(OBJDIR)/%.o: %.cpp $(DEPS)
+# Regla de compilación corregida
+$(OBJDIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 	@printf "Compiling ${MODULE_NAME} %s\n" "$<"
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+-include $(DEP_FILES)
 
 clean:
 	@rm -rf $(OBJDIR)
@@ -86,6 +65,10 @@ clean:
 fclean: clean
 	@rm -f $(NAME)
 
-re: fclean .WAIT all
+re: fclean
+	@$(MAKE) all
+
+bear: fclean
+	@bear -- $(MAKE)
 
 .PHONY: all clean fclean re

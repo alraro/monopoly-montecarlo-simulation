@@ -5,12 +5,12 @@
 #include "rules.hpp"
 #include "Logger.hpp"
 
-Game::Game(const SimulationRules &rules): 
-            _rules(rules),
-            _board(getBoardFromRules(rules)),
-            _players(getPlayersFromRules(rules)),
+Game::Game(const SimulationConfig &config): 
+            _config(config),
+            _board(getBoardFromRules(config)),
+            _players(getPlayersFromRules(config)),
             _currentPlayerIndex(0),
-            _gameStatistics(getGameStatisticsFromRules(rules)),
+            _gameStatistics(getGameStatisticsFromRules(config)),
             _dice()
 {
     if (_players.empty()) {
@@ -26,9 +26,9 @@ void Game::_sendPlayerToJail(Player &player) {
     player.sendToJail(_board.jailSquareIndex);
 
     this->_gameStatistics.recordTimesJailedPlayer(player.id);
-    Logger::debug("[DEBUG] Player ", _rules.players[player.id].name, "'s times jailed count is now ", _gameStatistics.getPlayerStats(player.id).timesJailed);
+    Logger::debug("[DEBUG] Player ", _config.players[player.id].name, "'s times jailed count is now ", _gameStatistics.getPlayerStats(player.id).timesJailed);
 
-    Logger::info("Player ", _rules.players[player.id].name, " is sent to Jail!");
+    Logger::info("Player ", _config.players[player.id].name, " is sent to Jail!");
 }
 
 SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
@@ -37,9 +37,9 @@ SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollRes
 
     this->_gameStatistics.recordLandingSquare(player.currentSquare);
 
-    Logger::info("Player ", _rules.players[player.id].name, " landed on square ", player.currentSquare, " (", _rules.squares[player.currentSquare].name, ").");
+    Logger::info("Player ", _config.players[player.id].name, " landed on square ", player.currentSquare, " (", _config.squares[player.currentSquare].name, ").");
 
-    SquareEffectResult effect = getSquareEffect(currentSquare, player, _rules);
+    SquareEffectResult effect = getSquareEffect(currentSquare, player, _config);
     switch (effect.type) {
         case SquareEffectType::GoToJail:
             _sendPlayerToJail(player);
@@ -61,20 +61,20 @@ void Game::_playPlayerTurnDoubles(Player &player, MonopolyDiceRollResult diceRol
     bool wasInJail = player.turnsLeftInJail > 0;
 
     if (player.turnsLeftInJail > 0) {
-        Logger::info("Player ", _rules.players[player.id].name, " is in Jail and rolled doubles to get out!");
+        Logger::info("Player ", _config.players[player.id].name, " is in Jail and rolled doubles to get out!");
         player.turnsLeftInJail = 0;
     } else {
         player.doublesRolledInARow++;
     }
 
     if (player.doublesRolledInARow >= rules::DOUBLES_TO_JAIL) {
-        Logger::info("Player ", _rules.players[player.id].name, " rolled doubles three times in a row and is sent to Jail!");
+        Logger::info("Player ", _config.players[player.id].name, " rolled doubles three times in a row and is sent to Jail!");
         _sendPlayerToJail(player);
     } else {
         SquareEffectResult appliedEffect = _movePlayerDiceRoll(player, diceRoll);
 
         if (!wasInJail && appliedEffect.type != SquareEffectType::GoToJail) {
-            Logger::info("Player ", _rules.players[player.id].name, " rolled doubles and gets another turn!");
+            Logger::info("Player ", _config.players[player.id].name, " rolled doubles and gets another turn!");
             _playPlayerTurn(player);
         }
     }
@@ -87,7 +87,7 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
     appliedEffect.value = 0;
 
     if (player.turnsLeftInJail > 0) {
-        Logger::info("Player ", _rules.players[player.id].name, " is in Jail and did not roll doubles.");
+        Logger::info("Player ", _config.players[player.id].name, " is in Jail and did not roll doubles.");
     } else {
         appliedEffect = _movePlayerDiceRoll(player, diceRoll);
     }
@@ -98,13 +98,13 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
 
 void Game::_playPlayerTurn(Player &player) {
     this->_gameStatistics.recordTurnPlayer(player.id);
-    Logger::debug("[DEBUG] Player ", _rules.players[player.id].name, "'s turn count is now ", _gameStatistics.getPlayerStats(player.id).totalTurns);
-    Logger::info("Player ", _rules.players[player.id].name, "'s turn.");
+    Logger::debug("[DEBUG] Player ", _config.players[player.id].name, "'s turn count is now ", _gameStatistics.getPlayerStats(player.id).totalTurns);
+    Logger::info("Player ", _config.players[player.id].name, "'s turn.");
     
     MonopolyDiceRollResult diceRoll = this->_dice.rollMonopolyDice();
     this->_gameStatistics.recordDiceRollPlayer(player.id, diceRoll);
 
-    Logger::info("Player ", _rules.players[player.id].name, " rolled a ", diceRoll.total(), " (", diceRoll.die1, " + ", diceRoll.die2, ") || ", (diceRoll.areDoubles() ? "DOUBLES!" : "No Doubles"));
+    Logger::info("Player ", _config.players[player.id].name, " rolled a ", diceRoll.total(), " (", diceRoll.die1, " + ", diceRoll.die2, ") || ", (diceRoll.areDoubles() ? "DOUBLES!" : "No Doubles"));
 
     if (diceRoll.areDoubles()) {
         _playPlayerTurnDoubles(player, diceRoll);
@@ -123,7 +123,7 @@ void Game::printStatistics() const {
     Logger::info("\n--- Player Statistics ---");
     for (const auto &player : _players) {
         const PlayerStats &stats = _gameStatistics.getPlayerStats(player.id);
-        Logger::info("Player ", _rules.players[player.id].name, " (ID: ", player.id, "):");
+        Logger::info("Player ", _config.players[player.id].name, " (ID: ", player.id, "):");
         Logger::info("  Total Turns: ", stats.totalTurns);
         Logger::info("  Turns Spent in Jail: ", stats.turnsSpentInJail);
         Logger::info("  Times Jailed: ", stats.timesJailed);
@@ -142,7 +142,7 @@ void Game::exportSquaresStatisticsToCSV(const std::string &filename) const {
 
     file << "square_name,total_landings\n";
     for (unsigned int i = 0; i < _board.squares.size(); ++i) {
-        file << _rules.squares[i].name << ","
+        file << _config.squares[i].name << ","
              << _gameStatistics.getSquareLandings(i) << "\n";
     }
     file.close();
@@ -160,7 +160,7 @@ void Game::exportPlayersStatisticsToCSV(const std::string &filename) const {
     for (const auto &player : _players) {
         PlayerStats stats = _gameStatistics.getPlayerStats(player.id);
         file << player.id << ","
-             << _rules.players[player.id].name << ","
+             << _config.players[player.id].name << ","
              << stats.totalTurns << ","
              << stats.turnsSpentInJail << ","
              << stats.timesJailed << ","
@@ -186,10 +186,10 @@ void Game::play(size_t numTurns) {
     }
 }
 
-Board getBoardFromRules(const SimulationRules &rules) {
+Board getBoardFromRules(const SimulationConfig &config) {
     Board board;
-    board.squares.reserve(rules.squares.size());
-    for (const auto &squareInfo : rules.squares) {
+    board.squares.reserve(config.squares.size());
+    for (const auto &squareInfo : config.squares) {
         Square square;
         switch (squareInfo.type) {
             case SquareType::Property:
@@ -220,14 +220,14 @@ Board getBoardFromRules(const SimulationRules &rules) {
     return board;
 }
 
-GameStatistics getGameStatisticsFromRules(const SimulationRules &rules) {
-    return GameStatistics(rules.players.size(), rules.squares.size());
+GameStatistics getGameStatisticsFromRules(const SimulationConfig &config) {
+    return GameStatistics(config.players.size(), config.squares.size());
 }
 
-std::vector<Player> getPlayersFromRules(const SimulationRules &rules) {
+std::vector<Player> getPlayersFromRules(const SimulationConfig &config) {
     std::vector<Player> players;
-    players.reserve(rules.players.size());
-    for (const auto &playerInfo : rules.players) {
+    players.reserve(config.players.size());
+    for (const auto &playerInfo : config.players) {
         Player player;
         player.id = playerInfo.id;
         players.push_back(player);

@@ -2,6 +2,8 @@
 # define LOGGER_HPP
 # include <iostream>
 # include <iomanip>
+#include <string>
+#include <unordered_map>
 
 enum class LogLevel {
     None,
@@ -14,6 +16,32 @@ enum class LogLevel {
 namespace Logger {
     inline LogLevel currentLevel        =   LogLevel::Info;
     inline int      lastPercentPrinted  =   -1;
+
+    inline const std::unordered_map<std::string, LogLevel> logLevelsNames = {
+        {"none", LogLevel::None},
+        {"progress", LogLevel::Progress},
+        {"info", LogLevel::Info},
+        {"error", LogLevel::Error},
+        {"debug", LogLevel::Debug},
+    };
+
+    class LogLevelNotFoundException : public std::exception {
+        private:
+            std::string _message;
+        public:
+            LogLevelNotFoundException(const std::string &levelName) : _message("Unknown log level: " + levelName + " <none|info|error|debug>") {}
+            const char* what() const noexcept override {
+                return _message.c_str();
+            }
+    };
+
+    inline LogLevel getLogLevelFromName(const std::string &name) {
+        auto it = logLevelsNames.find(name);
+        if (it != logLevelsNames.end()) {
+            return it->second;
+        }
+        throw LogLevelNotFoundException(name);
+    }
 
     inline void setLogLevel(LogLevel level) { currentLevel = level; }
 

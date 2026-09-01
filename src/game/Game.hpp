@@ -1,17 +1,15 @@
 #ifndef GAME_HPP
 # define GAME_HPP
-# include <vector>
-# include <memory>
 # include "Board.hpp"
 # include "Player.hpp"
 # include "effects.hpp"
 # include "GameStatistics.hpp"
-# include "SimulationRules.hpp"
+# include "SimulationConfig.hpp"
 # include "Dice.hpp"
 
 class Game {
     private:
-        const SimulationRules          &_rules;
+        const SimulationConfig          &_config;
         Board                           _board;
         std::vector<Player>             _players;
         PlayerId                        _currentPlayerIndex;
@@ -31,7 +29,7 @@ class Game {
         void _setupGameStatistics();
 
     public:
-        Game(const SimulationRules &rules);
+        Game(const SimulationConfig &config);
 
         void play(size_t numTurns);
         void printStatistics() const;
@@ -39,8 +37,8 @@ class Game {
         void exportSquaresStatisticsToCSV(const std::string &filename) const;
 };
 
-Board getBoardFromRules(const SimulationRules &rules);
-GameStatistics getGameStatisticsFromRules(const SimulationRules &rules);
-std::vector<Player> getPlayersFromRules(const SimulationRules &rules);
+Board getBoardFromRules(const SimulationConfig &config);
+GameStatistics getGameStatisticsFromRules(const SimulationConfig &config);
+std::vector<Player> getPlayersFromRules(const SimulationConfig &config);
 
 #endif
