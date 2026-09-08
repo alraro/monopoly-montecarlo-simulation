@@ -1,6 +1,14 @@
 CXX          = c++
-CXXFLAGS     = -Wall -Wextra -Werror -std=c++23 -MMD -MP
+CXXFLAGS     = -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wold-style-cast -std=c++23 -MMD -MP
 MAKEFLAGS    = -j$(shell nproc)
+
+ifeq ($(MODE), release)
+    # Flags de máximo rendimiento
+    CXXFLAGS += -O3 -march=native -flto -fno-exceptions -DNDEBUG
+else
+    # Flags de desarrollo por defecto
+    CXXFLAGS += -O0 -g -fsanitize=address,undefined
+endif
 
 NAME         = monopoly
 MODULE_NAME  = monopoly
@@ -70,5 +78,8 @@ re: fclean
 
 bear: fclean
 	@bear -- $(MAKE)
+
+release:
+	@$(MAKE) MODE=release re
 
 .PHONY: all clean fclean re

@@ -1,9 +1,10 @@
 #ifndef LOGGER_HPP
 # define LOGGER_HPP
+#include <array>
 # include <iostream>
 # include <iomanip>
-#include <string>
-#include <unordered_map>
+#include <optional>
+#include <string_view>
 
 enum class LogLevel {
     None,
@@ -17,30 +18,21 @@ namespace Logger {
     inline LogLevel currentLevel        =   LogLevel::Info;
     inline int      lastPercentPrinted  =   -1;
 
-    inline const std::unordered_map<std::string, LogLevel> logLevelsNames = {
-        {"none", LogLevel::None},
+    inline constexpr std::array<std::pair<std::string_view, LogLevel>, 5> logLevelsNames = {{
+        {"none",     LogLevel::None},
         {"progress", LogLevel::Progress},
-        {"info", LogLevel::Info},
-        {"error", LogLevel::Error},
-        {"debug", LogLevel::Debug},
-    };
+        {"info",     LogLevel::Info},
+        {"error",    LogLevel::Error},
+        {"debug",    LogLevel::Debug},
+    }};
 
-    class LogLevelNotFoundException : public std::exception {
-        private:
-            std::string _message;
-        public:
-            LogLevelNotFoundException(const std::string &levelName) : _message("Unknown log level: " + levelName + " <none|info|error|debug>") {}
-            const char* what() const noexcept override {
-                return _message.c_str();
+    inline std::optional<LogLevel> getLogLevelFromName(std::string_view name) {
+        for (const auto &[str, level] : logLevelsNames) {
+            if (str == name) {
+                return level;
             }
-    };
-
-    inline LogLevel getLogLevelFromName(const std::string &name) {
-        auto it = logLevelsNames.find(name);
-        if (it != logLevelsNames.end()) {
-            return it->second;
         }
-        throw LogLevelNotFoundException(name);
+        return std::nullopt;
     }
 
     inline void setLogLevel(LogLevel level) { currentLevel = level; }
@@ -57,15 +49,15 @@ namespace Logger {
         }
     }
 
-    inline void progress(unsigned int current, unsigned int total) {
+    inline void progress(size_t current, size_t total) {
         constexpr int increment = 5;
         constexpr int barWidth = 20;  // 20 segmentos = cada uno vale 5%
 
-        if (currentLevel != LogLevel::Progress) {
+        if (currentLevel != LogLevel::Progress || total == 0) {
             return;
         }
 
-        int percentage = static_cast<int>((current + 1) / static_cast<double>(total) * 100);
+        int percentage = static_cast<int>(((current + 1) * 100) / (total));
         percentage = (percentage / increment) * increment;
 
         if (percentage != lastPercentPrinted) {

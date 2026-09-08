@@ -15,7 +15,7 @@ struct SimulationConfig {
     uint64_t turnLimit = DEFAULT_TURNS;
     uint64_t seed = DEFAULT_SEED;
     uint64_t gameCount = DEFULT_GAME_COUNT;
-    uint16_t numThreads = std::thread::hardware_concurrency();
+    unsigned int numThreads = std::thread::hardware_concurrency();
 
     LogLevel logLevel = DEFAULT_LOG_LEVEL;
 
@@ -31,6 +31,18 @@ struct SimulationConfig {
 
     void addSquare(SquareInfo square) {
         squares.push_back(square);
+    }
+
+    bool isValid() const {
+        if (players.empty()) {
+            Logger::error("No players provided in the simulation rules.");
+            return false;
+        }
+        if (squares.empty()) {
+            Logger::error("No squares provided in the simulation rules.");
+            return false;
+        }
+        return true;
     }
 
 };

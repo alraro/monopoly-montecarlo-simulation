@@ -1,3 +1,4 @@
+#include <cassert>
 #include <fstream>
 #include "Game.hpp"
 #include "Squares.hpp"
@@ -13,13 +14,8 @@ Game::Game(const SimulationConfig &config):
             _gameStatistics(getGameStatisticsFromRules(config)),
             _dice()
 {
-    if (_players.empty()) {
-        throw std::runtime_error("No players provided in the simulation rules.");
-    }
-
-    if (_board.squares.empty()) {
-        throw std::runtime_error("No squares provided in the simulation rules.");
-    }
+    assert(!_players.empty() && "Precondition failed: There must be at least one player in the game.");
+    assert(!_board.squares.empty() && "Precondition failed: There must be at least one square on the board.");
 }
 
 void Game::_sendPlayerToJail(Player &player) {
@@ -32,7 +28,7 @@ void Game::_sendPlayerToJail(Player &player) {
 }
 
 SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
-    player.moveToSquare((player.currentSquare + diceRoll.total()) % _board.squares.size());
+    player.moveToSquare(static_cast<SquareId>((player.currentSquare + diceRoll.total()) % _board.squares.size()));
     const Square &currentSquare = _board.squares[player.currentSquare];
 
     this->_gameStatistics.recordLandingSquare(player.currentSquare);
@@ -92,7 +88,7 @@ void Game::_playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceR
         appliedEffect = _movePlayerDiceRoll(player, diceRoll);
     }
     if (appliedEffect.type != SquareEffectType::GoToJail) {
-        player.turnsLeftInJail = std::max(0, player.turnsLeftInJail - 1);
+        player.turnsLeftInJail = static_cast<int8_t>(std::max(0, player.turnsLeftInJail - 1));
     }
 }
 
@@ -182,7 +178,7 @@ void Game::play(size_t numTurns) {
         Player &currentPlayer = _players[_currentPlayerIndex];
         _playPlayerTurn(currentPlayer);
 
-        _currentPlayerIndex = (_currentPlayerIndex + 1) % _players.size();
+        _currentPlayerIndex = static_cast<PlayerId>((_currentPlayerIndex + 1) % _players.size());
     }
 }
 
@@ -203,7 +199,7 @@ Board getBoardFromRules(const SimulationConfig &config) {
                 break;
             case SquareType::Jail:
                 square = JailSquare{};
-                board.jailSquareIndex = board.squares.size();
+                board.jailSquareIndex = static_cast<SquareId>(board.squares.size());
                 break;
             case SquareType::Luck:
                 square = LuckSquare{};

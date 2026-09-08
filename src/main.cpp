@@ -36,12 +36,12 @@ namespace {
         }},
         {{"log-level", "l"}, [](SimulationConfig &config, const auto &nextArg) {
             std::string level = nextArg();
-            try {
-                config.logLevel = Logger::getLogLevelFromName(level);
-            } catch (const Logger::LogLevelNotFoundException &e) {
-                Logger::error(e.what());
+            auto parsedLevel = Logger::getLogLevelFromName(level);
+            if (!parsedLevel) {
+                Logger::error("Unknown log level: ", level, ". <none|info|progress|error|debug>");
                 exit(1);
             }
+            config.logLevel = *parsedLevel;
         }},
         {{"players-stats"}, [](SimulationConfig &config, const auto &nextArg) {
             config.playersStatisticsFilename = nextArg();
@@ -136,6 +136,7 @@ int main(int argc, char *argv[]) {
     Logger::setLogLevel(configs.logLevel);
     Logger::info("Random seed: ", configs.seed);
     
+    if (!configs.isValid()) return 1;
     Simulation simulation(configs);
 
     simulation.run();
