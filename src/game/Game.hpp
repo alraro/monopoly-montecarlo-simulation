@@ -32,7 +32,7 @@ class Game {
         void _setupGameStatistics();
         void _exportPlayersStatisticsToCSV(std::string_view fileName = "player_stats.csv") const;
         void _exportSquaresStatisticsToCSV(std::string_view fileName = "square_stats.csv") const;
-        std::filesystem::path _createGameStatsDirectory() const;
+        std::ofstream _createStatsFile(std::string_view fileName) const;
         void _printStatistics() const;
 
     public:

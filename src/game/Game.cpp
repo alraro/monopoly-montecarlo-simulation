@@ -134,7 +134,7 @@ void Game::_printStatistics() const {
 
 }
 
-std::filesystem::path Game::_createGameStatsDirectory() const {
+std::ofstream Game::_createStatsFile(std::string_view fileName) const {
     std::error_code ec;
 
     std::filesystem::path dirPath = std::filesystem::path(_config.baseDir) / _config.simulationName / std::format("game_{:04d}", _gameId); 
@@ -145,18 +145,17 @@ std::filesystem::path Game::_createGameStatsDirectory() const {
         exit(1);
     }
 
-    return dirPath;
+    std::ofstream file(dirPath / fileName);
+    if (!file.is_open()) {
+        Logger::error("Failed to open file for writing: ", dirPath / fileName);
+        exit(1);
+    }
+
+    return file;
 }
 
 void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
-    std::filesystem::path dirPath = _createGameStatsDirectory();
-    std::filesystem::path fileRoute = dirPath / fileName;
-
-    std::ofstream file(fileRoute);
-    if (!file.is_open()) {
-        Logger::error("Failed to open squares file for writing: ", fileRoute);
-        return;
-    }
+    std::ofstream file = _createStatsFile(fileName);
 
     file << "square_name,total_landings\n";
     for (unsigned int i = 0; i < _board.squares.size(); ++i) {
@@ -168,15 +167,7 @@ void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
 
 
 void Game::_exportPlayersStatisticsToCSV(std::string_view fileName) const {
-    std::filesystem::path dirPath = _createGameStatsDirectory();
-    std::filesystem::path fileRoute = dirPath / fileName;
-
-    std::ofstream file(fileRoute);
-
-    if (!file.is_open()) {
-        Logger::error("Failed to open players file for writing: ", fileRoute);
-        return;
-    }
+    std::ofstream file = _createStatsFile(fileName);
 
     file << "player_id,player_name,total_turns,turns_spent_in_jail,times_jailed,total_dice_rolls,total_doubles_rolled\n";
     for (const auto &player : _players) {
