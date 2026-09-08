@@ -36,7 +36,7 @@ GAMESRC       = Game.cpp
 EXTRASRC      =
 STRATEGYSRC   = BasicStrategy.cpp
 LOGGERSRC     =
-SIMULATIONSRC = Simulation.cpp
+SIMULATIONSRC = Simulation.cpp ConfigParser.cpp
 
 # Se filtran elementos vacíos para evitar rutas inválidas
 SRC          = $(strip \
