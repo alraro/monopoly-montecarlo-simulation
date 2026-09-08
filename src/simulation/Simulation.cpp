@@ -2,23 +2,17 @@
 #include "Game.hpp"
 #include <thread>
 #include <iostream>
-#include <mutex>
-#include <queue>
 
 Simulation::Simulation(const SimulationConfig &config) : _config(config) {}
 
 namespace {
-    void runSingleGameFromQueue(std::queue<Game> &gameQueue, size_t turnLimit, std::mutex &gameMutex) {
+    void runSingleGameFromQueue(std::vector<Game> &gameList, size_t turnLimit, std::atomic<size_t> &nextGameIndex) {
         while (true) {
-                std::unique_lock<std::mutex> lock(gameMutex);
-                if (gameQueue.empty()) {
-                    return;
+                size_t index = nextGameIndex.fetch_add(1, std::memory_order_relaxed);
+                if (index >= gameList.size()) {
+                    return ;
                 }
-                Game game = std::move(gameQueue.front());
-                gameQueue.pop();
-                lock.unlock();
-
-                game.play(turnLimit);
+                gameList[index].play(turnLimit);
         }
     }
 
@@ -31,18 +25,18 @@ namespace {
 void Simulation::runParallelMontecarloSimulation(size_t games, size_t turnLimit, size_t numThreads) {
 
     std::vector<std::thread> threads;
-    std::mutex gameMutex;
+    std::atomic<size_t> nextGameIndex(0);
 
-    std::queue<Game> gameQueue;
+    std::vector<Game> gamesList;
+    gamesList.reserve(games);
 
     for (size_t i = 0; i < games; ++i) {
-        gameQueue.emplace(_config);
+        gamesList.emplace_back(_config);
     }
 
     threads.reserve(numThreads);
     for (size_t i = 0; i < numThreads; ++i) {
-        std::thread gameThread(runSingleGameFromQueue, std::ref(gameQueue), turnLimit, std::ref(gameMutex));
-        threads.push_back(std::move(gameThread));
+        threads.emplace_back(runSingleGameFromQueue, std::ref(gamesList), turnLimit, std::ref(nextGameIndex));
     }
     
     int count = 0;
