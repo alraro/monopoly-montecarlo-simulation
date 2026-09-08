@@ -42,11 +42,14 @@ namespace ConfigParser {
                 }
                 config.logLevel = *parsedLevel;
             }},
-            {{"players-stats"}, [](SimulationConfig &config, const auto &nextArg) {
-                config.playersStatisticsFilename = nextArg();
+            {{"sim-name"}, [](SimulationConfig &config, const auto &nextArg) {
+                config.simulationName = nextArg();
             }},
-            {{"squares-stats"}, [](SimulationConfig &config, const auto &nextArg) {
-                config.squaresStatisticsFilename = nextArg();
+            {{"base-dir"}, [](SimulationConfig &config, const auto &nextArg) {
+                config.baseDir = nextArg();
+            }},
+            {{"no-export-stats"}, [](SimulationConfig &config, const auto &) {
+                config.exportStatistics = false;
             }},
             {{"parallel", "p"}, [](SimulationConfig &config, const auto &) {
                 config.runInParallel = true;

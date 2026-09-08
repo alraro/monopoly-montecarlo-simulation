@@ -17,7 +17,8 @@ namespace {
     }
 
     void runSingleGame(const SimulationConfig &rules, size_t turnLimit) {
-        Game game(rules);
+        static GameId gameCounter = 0;
+        Game game(rules, gameCounter++);
         game.play(turnLimit);
     }
 }
@@ -31,7 +32,7 @@ void Simulation::runParallelMontecarloSimulation(size_t games, size_t turnLimit,
     gamesList.reserve(games);
 
     for (size_t i = 0; i < games; ++i) {
-        gamesList.emplace_back(_config);
+        gamesList.emplace_back(_config, static_cast<GameId>(i));
     }
 
     threads.reserve(numThreads);
@@ -57,6 +58,7 @@ void Simulation::runSequentialMontecarloSimulation(size_t games, size_t turnLimi
 }
 
 void Simulation::run() {
+
     if (_config.runInParallel) {
         _config.logLevel = LogLevel::None;
         Logger::setLogLevel(_config.logLevel);

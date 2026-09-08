@@ -1,13 +1,18 @@
 #include <cassert>
 #include <fstream>
+#include <string>
 #include "Game.hpp"
 #include "Squares.hpp"
 #include "effects.hpp"
 #include "rules.hpp"
 #include "Logger.hpp"
+#include <filesystem>
+#include <string_view>
+#include <system_error>
 
-Game::Game(const SimulationConfig &config): 
+Game::Game(const SimulationConfig &config, GameId gameId) : 
             _config(config),
+            _gameId(gameId),
             _board(getBoardFromRules(config)),
             _players(getPlayersFromRules(config)),
             _currentPlayerIndex(0),
@@ -113,7 +118,7 @@ void Game::_playPlayerTurn(Player &player) {
     }
 }
 
-void Game::printStatistics() const {
+void Game::_printStatistics() const {
     Logger::info("\n========== Game Statistics ==========");
     
     Logger::info("\n--- Player Statistics ---");
@@ -129,10 +134,27 @@ void Game::printStatistics() const {
 
 }
 
-void Game::exportSquaresStatisticsToCSV(const std::string &filename) const {
-    std::ofstream file(filename);
+std::filesystem::path Game::_createGameStatsDirectory() const {
+    std::error_code ec;
+
+    std::filesystem::path dirPath = std::filesystem::path(_config.baseDir) / _config.simulationName / std::format("game_{:04d}", _gameId); 
+    std::filesystem::create_directories(dirPath, ec);
+
+    if (ec) {
+        Logger::error("Failed to create game directory: ", _config.baseDir + "/" + _config.simulationName + "/game_" + std::to_string(_gameId), ". Error: ", ec.message());
+        exit(1);
+    }
+
+    return dirPath;
+}
+
+void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
+    std::filesystem::path dirPath = _createGameStatsDirectory();
+    std::filesystem::path fileRoute = dirPath / fileName;
+
+    std::ofstream file(fileRoute);
     if (!file.is_open()) {
-        Logger::error("Failed to open squares file for writing: ", filename);
+        Logger::error("Failed to open squares file for writing: ", fileRoute);
         return;
     }
 
@@ -144,11 +166,15 @@ void Game::exportSquaresStatisticsToCSV(const std::string &filename) const {
     file.close();
 }
 
-void Game::exportPlayersStatisticsToCSV(const std::string &filename) const {
-    std::ofstream file(filename);
+
+void Game::_exportPlayersStatisticsToCSV(std::string_view fileName) const {
+    std::filesystem::path dirPath = _createGameStatsDirectory();
+    std::filesystem::path fileRoute = dirPath / fileName;
+
+    std::ofstream file(fileRoute);
 
     if (!file.is_open()) {
-        Logger::error("Failed to open players file for writing: ", filename);
+        Logger::error("Failed to open players file for writing: ", fileRoute);
         return;
     }
 
@@ -180,6 +206,14 @@ void Game::play(size_t numTurns) {
 
         _currentPlayerIndex = static_cast<PlayerId>((_currentPlayerIndex + 1) % _players.size());
     }
+
+    Logger::info("Simulation completed.");
+    if (!_config.exportStatistics)
+        return ;
+
+    Logger::info("Storing statistics to CSV files.");
+    this->_exportPlayersStatisticsToCSV();
+    this->_exportSquaresStatisticsToCSV();
 }
 
 Board getBoardFromRules(const SimulationConfig &config) {

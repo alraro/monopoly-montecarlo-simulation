@@ -21,8 +21,11 @@ struct SimulationConfig {
 
     std::vector<PlayerInfo> players;
     std::vector<SquareInfo> squares;
-    std::string playersStatisticsFilename = "";
-    std::string squaresStatisticsFilename = "";
+
+    std::string baseDir = ".";
+    std::string simulationName = "unnamed_simulation";
+    bool exportStatistics = true;
+
     bool runInParallel = false;
 
     void addPlayer(PlayerId id, const std::string &name) {

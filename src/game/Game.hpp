@@ -6,10 +6,13 @@
 # include "GameStatistics.hpp"
 # include "SimulationConfig.hpp"
 # include "Dice.hpp"
+#include <filesystem>
+#include <string_view>
 
 class Game {
     private:
         const SimulationConfig          &_config;
+        GameId                          _gameId;
         Board                           _board;
         std::vector<Player>             _players;
         PlayerId                        _currentPlayerIndex;
@@ -27,14 +30,15 @@ class Game {
         void _playPlayerTurnNoDoubles(Player &player, MonopolyDiceRollResult diceRoll);
 
         void _setupGameStatistics();
+        void _exportPlayersStatisticsToCSV(std::string_view fileName = "player_stats.csv") const;
+        void _exportSquaresStatisticsToCSV(std::string_view fileName = "square_stats.csv") const;
+        std::filesystem::path _createGameStatsDirectory() const;
+        void _printStatistics() const;
 
     public:
-        Game(const SimulationConfig &config);
+        Game(const SimulationConfig &config, GameId gameId);
 
         void play(size_t numTurns);
-        void printStatistics() const;
-        void exportPlayersStatisticsToCSV(const std::string &filename) const;
-        void exportSquaresStatisticsToCSV(const std::string &filename) const;
 };
 
 Board getBoardFromRules(const SimulationConfig &config);
