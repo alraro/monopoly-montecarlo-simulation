@@ -3,7 +3,7 @@
 
 class ImGuiMainWindow : public IMainWindow {
     public:
-        void setMainView(IView* view) override {
+        void setMainView(IView* displayView) override {
             // TODO: Implement this method to set the main view of the ImGui main window.
         }
 

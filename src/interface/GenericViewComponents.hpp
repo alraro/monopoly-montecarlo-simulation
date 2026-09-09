@@ -5,13 +5,14 @@
 
 class IView { 
 public: 
-    virtual ~IView() = default; 
+    virtual ~IView() = default;
+    virtual void renderFrame() = 0;
 };
 
 class IMainWindow {
 public:
     virtual ~IMainWindow() = default;
-    virtual void setMainView(IView* vista) = 0;
+    virtual void setMainView(IView* displayView) = 0;
     virtual void display() = 0;
 };
 
@@ -23,8 +24,8 @@ public:
 
 class IProgressView : public IView {
 public:
-    virtual void setupProgressBar(uint64_t totalPartidas) = 0;
-    virtual void updateProgress(uint64_t completado, uint64_t total) = 0;
+    virtual void setupProgressBar(uint64_t totalGames) = 0;
+    virtual void updateProgress(uint64_t completedCount, uint64_t totalGames) = 0;
 };
 
 class IGUIFactory {

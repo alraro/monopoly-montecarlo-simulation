@@ -3,7 +3,15 @@
 
 class ImGuiProgressView : public IProgressView {
     public:
-        void setupProgressBar(uint64_t totalPartidas) override {
+        void setupProgressBar(uint64_t totalGames) override {
             // TODO: Implement this method to set up the progress bar with the total number of games in the ImGui progress view.
+        }
+
+        void updateProgress(uint64_t completedCount, uint64_t totalGames) override {
+            // TODO: Implement this method to update the progress bar with the completed and total number of games in the ImGui progress view.
+        }
+
+        void renderFrame() override {
+            // TODO: Implement this method to render the ImGui progress view frame and handle user interactions.
         }
 };
