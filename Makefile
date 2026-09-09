@@ -6,7 +6,7 @@ MAKEFLAGS    = -j$(shell nproc)
 
 ifeq ($(MODE), release)
     CXXFLAGS += -O3 -march=native -flto -fno-exceptions -DNDEBUG
-    LDFLAGS  += -flto
+    LDFLAGS  += -flto=auto
 else
     SANFLAGS := -fsanitize=address,undefined
     CXXFLAGS += -O0 -g $(SANFLAGS)
