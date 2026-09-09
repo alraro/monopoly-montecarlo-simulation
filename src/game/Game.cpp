@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <string_view>
 #include <system_error>
+#include <format>
 
 Game::Game(const SimulationConfig &config, GameId gameId) : 
             _config(config),
