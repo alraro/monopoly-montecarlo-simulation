@@ -1,13 +1,18 @@
 #pragma once
 #include "GenericViewComponents.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include <GLFW/glfw3.h>
 
 class ImGuiMainWindow : public IMainWindow {
+    private:
+        GLFWwindow* _window;
+        IView*      _currentView = nullptr;
     public:
-        void setMainView(IView* displayView) override {
-            // TODO: Implement this method to set the main view of the ImGui main window.
-        }
+        ImGuiMainWindow();
+        ~ImGuiMainWindow();
 
-        void display() override {
-            // TODO: Implement this method to display the ImGui main window.
-        }
+        void setMainView(IView* displayView) override;
+        void display() override;
 };

@@ -1,4 +1,3 @@
-#include "Logger.hpp"
 #include "SimulationConfig.hpp"
 #include "ConfigParser.hpp"
 #include "Simulation.hpp"
@@ -42,7 +41,6 @@ int main(int argc, char *argv[]) {
     // IProgressView* progressView = nullptr; 
     // Simulation simulation(configs, *progressView);
     // simulation.run();
-
 
     ImGuiFactory guiFactory;
     MainController controller(guiFactory);
