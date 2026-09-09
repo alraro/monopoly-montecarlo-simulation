@@ -1,13 +1,16 @@
 CXX          = c++
-CXXFLAGS     = -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wold-style-cast -std=c++23 -MMD -MP
+WARNFLAGS    = -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wold-style-cast
+CXXFLAGS     = -std=c++23 -MMD -MP $(WARNFLAGS)
+LDFLAGS      = -lglfw -lGL -ldl -lpthread
 MAKEFLAGS    = -j$(shell nproc)
 
 ifeq ($(MODE), release)
-    # Flags de máximo rendimiento
     CXXFLAGS += -O3 -march=native -flto -fno-exceptions -DNDEBUG
+    LDFLAGS  += -flto
 else
-    # Flags de desarrollo por defecto
-    CXXFLAGS += -O0 -g -fsanitize=address,undefined
+    SANFLAGS := -fsanitize=address,undefined
+    CXXFLAGS += -O0 -g $(SANFLAGS)
+    LDFLAGS  += $(SANFLAGS)
 endif
 
 NAME         = monopoly
@@ -16,16 +19,22 @@ MODULE_NAME  = monopoly
 OBJDIR       = obj
 BASEDIR      = src
 
-BOARDDIR      = $(BASEDIR)/board
-SQUARESDIR    = $(BASEDIR)/squares
-PLAYERDIR     = $(BASEDIR)/player
-GAMEDIR       = $(BASEDIR)/game
-EXTRADIR      = $(BASEDIR)/extra
-STRATEGYDIR   = $(BASEDIR)/strategy
-LOGGERDIR     = $(BASEDIR)/logger
-SIMULATIONDIR = $(BASEDIR)/simulation
+BOARDDIR        = $(BASEDIR)/board
+SQUARESDIR      = $(BASEDIR)/squares
+PLAYERDIR       = $(BASEDIR)/player
+GAMEDIR         = $(BASEDIR)/game
+EXTRADIR        = $(BASEDIR)/extra
+STRATEGYDIR     = $(BASEDIR)/strategy
+LOGGERDIR       = $(BASEDIR)/logger
+SIMULATIONDIR   = $(BASEDIR)/simulation
 
-INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR) $(SIMULATIONDIR)
+LIBRARIESDIR    = $(BASEDIR)/libraries
+IMGUIDIR        = $(LIBRARIESDIR)/imgui
+IMGUIBACKENDDIR = $(IMGUIDIR)/backends
+
+INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) \
+               $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR) $(SIMULATIONDIR) \
+               $(LIBRARIESDIR) $(IMGUIDIR) $(IMGUIBACKENDDIR)
 INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
 
 BASESRC       = main.cpp
@@ -38,7 +47,11 @@ STRATEGYSRC   = BasicStrategy.cpp
 LOGGERSRC     =
 SIMULATIONSRC = Simulation.cpp ConfigParser.cpp
 
-# Se filtran elementos vacíos para evitar rutas inválidas
+# Fuentes de ImGui corregidas (wildcard entrega ruta completa)
+IMGUISRC        = $(wildcard $(IMGUIDIR)/*.cpp)
+IMGUIBACKENDSRC = $(IMGUIBACKENDDIR)/imgui_impl_glfw.cpp \
+                  $(IMGUIBACKENDDIR)/imgui_impl_opengl3.cpp
+
 SRC          = $(strip \
                $(addprefix $(BASEDIR)/, $(BASESRC)) \
                $(addprefix $(BOARDDIR)/, $(BOARDSRC)) \
@@ -48,7 +61,9 @@ SRC          = $(strip \
                $(addprefix $(EXTRADIR)/, $(EXTRASRC)) \
                $(addprefix $(LOGGERDIR)/, $(LOGGERSRC)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
-               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC)))
+               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC)) \
+               $(IMGUISRC) \
+               $(IMGUIBACKENDSRC))
 
 OBJ          = $(SRC:%.cpp=$(OBJDIR)/%.o)
 DEP_FILES    = $(OBJ:.o=.d)
@@ -56,10 +71,14 @@ DEP_FILES    = $(OBJ:.o=.d)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
+	@$(CXX) $(OBJ) -o $(NAME) $(LDFLAGS)
 	@echo "${MODULE_NAME} compiled successfully!"
 
-# Regla de compilación corregida
+$(OBJDIR)/$(LIBRARIESDIR)/%.o: $(LIBRARIESDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@printf "Compiling external %s\n" "$<"
+	@$(CXX) -std=c++23 -MMD -MP $(INCLUDES) -c $< -o $@
+
 $(OBJDIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
 	@printf "Compiling ${MODULE_NAME} %s\n" "$<"
@@ -82,4 +101,4 @@ bear: fclean
 release:
 	@$(MAKE) MODE=release re
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bear release
