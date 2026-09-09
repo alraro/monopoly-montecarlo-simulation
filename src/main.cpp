@@ -2,6 +2,8 @@
 #include "SimulationConfig.hpp"
 #include "ConfigParser.hpp"
 #include "Simulation.hpp"
+#include "ImGuiFactory.hpp"
+#include "MainController.hpp"
 
 namespace {
 
@@ -31,14 +33,20 @@ int main(int argc, char *argv[]) {
 
     setupDefaultPlayersAndSquaresInfo(configs);
 
-    Logger::setLogLevel(configs.logLevel);
-    Logger::info("Random seed: ", configs.seed);
+    // Logger::setLogLevel(configs.logLevel);
+    // Logger::info("Random seed: ", configs.seed);
     
-    if (!configs.isValid())
-        return 1;
+    // if (!configs.isValid())
+    //     return 1;
 
-    Simulation simulation(configs);
-    simulation.run();
+    // IProgressView* progressView = nullptr; 
+    // Simulation simulation(configs, *progressView);
+    // simulation.run();
+
+
+    ImGuiFactory guiFactory;
+    MainController controller(guiFactory);
+    controller.start();
 
     return 0;
 }

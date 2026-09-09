@@ -23,8 +23,8 @@ public:
 
 class IProgressView : public IView {
 public:
-    virtual void setupProgressBar(int totalPartidas) = 0;
-    virtual void updateProgress(int completado, int total) = 0;
+    virtual void setupProgressBar(uint64_t totalPartidas) = 0;
+    virtual void updateProgress(uint64_t completado, uint64_t total) = 0;
 };
 
 class IGUIFactory {

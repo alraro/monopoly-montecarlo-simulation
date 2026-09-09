@@ -21,21 +21,21 @@ namespace {
     }
 }
 
-void Simulation::runParallelMontecarloSimulation(size_t games, size_t turnLimit, size_t numThreads) {
+void Simulation::runParallelMontecarloSimulation() {
 
     std::vector<std::thread> threads;
     std::atomic<size_t> nextGameIndex(0);
 
     std::vector<Game> gamesList;
-    gamesList.reserve(games);
+    gamesList.reserve(_config.gameCount);
 
-    for (size_t i = 0; i < games; ++i) {
+    for (size_t i = 0; i < _config.gameCount; ++i) {
         gamesList.emplace_back(_config, static_cast<GameId>(i));
     }
 
-    threads.reserve(numThreads);
-    for (size_t i = 0; i < numThreads; ++i) {
-        threads.emplace_back(runSingleGameFromQueue, std::ref(gamesList), turnLimit, std::ref(nextGameIndex));
+    threads.reserve(_config.numThreads);
+    for (size_t i = 0; i < _config.numThreads; ++i) {
+        threads.emplace_back(runSingleGameFromQueue, std::ref(gamesList), _config.turnLimit, std::ref(nextGameIndex));
     }
     
     int count = 0;
@@ -43,16 +43,17 @@ void Simulation::runParallelMontecarloSimulation(size_t games, size_t turnLimit,
         if (thread.joinable()) {
             thread.join();
             ++count;
-            std::cout << "Completed thread " << count << " of " << numThreads << std::endl;
+            std::cout << "Completed thread " << count << " of " << _config.numThreads << std::endl;
         }
     }
 }
 
-void Simulation::runSequentialMontecarloSimulation(size_t games, size_t turnLimit) {
-    for (size_t i = 0; i < games; ++i) {
-        runSingleGame(_config, turnLimit);
-        std::cout << "Completed game " << (i + 1) << " of " << games << std::endl;
-        this->_progressView.updateProgress(i + 1, int(games));
+
+void Simulation::runSequentialMontecarloSimulation() {
+    for (uint64_t i = 0; i < _config.gameCount; ++i) {
+        runSingleGame(_config, _config.turnLimit);
+        std::cout << "Completed game " << (i + 1) << " of " << _config.gameCount << std::endl;
+        this->_progressView.updateProgress(i + 1, _config.gameCount);
     }
 }
 
@@ -61,8 +62,8 @@ void Simulation::run() {
     if (_config.runInParallel) {
         _config.logLevel = LogLevel::None;
         Logger::setLogLevel(_config.logLevel);
-        runParallelMontecarloSimulation(_config.gameCount, _config.turnLimit, _config.numThreads);
+        runParallelMontecarloSimulation();
     } else {
-        runSequentialMontecarloSimulation(_config.gameCount, _config.turnLimit);
+        runSequentialMontecarloSimulation();
     }
 }
