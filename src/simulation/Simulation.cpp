@@ -3,8 +3,6 @@
 #include <thread>
 #include <iostream>
 
-Simulation::Simulation(const SimulationConfig &config) : _config(config) {}
-
 namespace {
     void runSingleGameFromQueue(std::vector<Game> &gameList, size_t turnLimit, std::atomic<size_t> &nextGameIndex) {
         while (true) {
@@ -54,6 +52,7 @@ void Simulation::runSequentialMontecarloSimulation(size_t games, size_t turnLimi
     for (size_t i = 0; i < games; ++i) {
         runSingleGame(_config, turnLimit);
         std::cout << "Completed game " << (i + 1) << " of " << games << std::endl;
+        this->_progressView.updateProgress(i + 1, int(games));
     }
 }
 
