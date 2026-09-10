@@ -1,20 +1,24 @@
 #pragma once
 #include "GenericViewComponents.hpp"
+#include "imgui.h"
 
 class ImGuiProgressView : public IProgressView {
+    private:
+        float _progress = 0.0f;
     public:
         void setupProgressBar(uint64_t totalGames) override {
-            (void)totalGames; // Avoid unused parameter warning
-            // TODO: Implement this method to set up the progress bar with the total number of games in the ImGui progress view.
+            (void)totalGames;
+            _progress = 0.0f;
         }
 
         void updateProgress(uint64_t completedCount, uint64_t totalGames) override {
-            (void)completedCount; // Avoid unused parameter warning
-            (void)totalGames; // Avoid unused parameter warning
-            // TODO: Implement this method to update the progress bar with the completed and total number of games in the ImGui progress view.
+            _progress = static_cast<float>(completedCount) / static_cast<float>(totalGames);
         }
 
         void renderFrame() override {
-            // TODO: Implement this method to render the ImGui progress view frame and handle user interactions.
+            ImGui::Begin("Ejecutando Simulación");
+            ImGui::Text("Calculando Montecarlo...");
+            ImGui::ProgressBar(_progress, ImVec2(-1.0f, 0.0f));
+            ImGui::End();
         }
 };

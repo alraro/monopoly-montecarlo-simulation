@@ -28,6 +28,8 @@ struct SimulationConfig {
 
     bool runInParallel = false;
 
+    bool hasInterface = true;
+
     void addPlayer(PlayerId id, const std::string &name) {
         players.emplace_back(id, name);
     }

@@ -54,6 +54,9 @@ namespace ConfigParser {
             {{"parallel", "p"}, [](SimulationConfig &config, const auto &) {
                 config.runInParallel = true;
             }},
+            {{"no-interface"}, [](SimulationConfig &config, const auto &) {
+                config.hasInterface = false;
+            }}
         };
         
         const std::unordered_map<std::string, ArgHandler> kArgHandlers = [] {

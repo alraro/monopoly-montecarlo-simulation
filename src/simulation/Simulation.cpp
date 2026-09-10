@@ -4,20 +4,22 @@
 #include <iostream>
 
 namespace {
-    void runSingleGameFromQueue(std::vector<Game> &gameList, size_t turnLimit, std::atomic<size_t> &nextGameIndex) {
+    void runSingleGameFromQueue(std::vector<Game> &gameList, size_t turnLimit, std::atomic<size_t> &nextGameIndex, std::atomic<uint64_t> &completedGames) {
         while (true) {
                 size_t index = nextGameIndex.fetch_add(1, std::memory_order_relaxed);
                 if (index >= gameList.size()) {
                     return ;
                 }
                 gameList[index].play(turnLimit);
+                completedGames.fetch_add(1, std::memory_order_relaxed);
         }
     }
 
-    void runSingleGame(const SimulationConfig &rules, size_t turnLimit) {
+    void runSingleGame(const SimulationConfig &rules, size_t turnLimit, std::atomic<uint64_t> &completedGames) {
         static GameId gameCounter = 0;
         Game game(rules, gameCounter++);
         game.play(turnLimit);
+        completedGames.fetch_add(1, std::memory_order_relaxed);
     }
 }
 
@@ -35,7 +37,7 @@ void Simulation::runParallelMontecarloSimulation() {
 
     threads.reserve(_config.numThreads);
     for (size_t i = 0; i < _config.numThreads; ++i) {
-        threads.emplace_back(runSingleGameFromQueue, std::ref(gamesList), _config.turnLimit, std::ref(nextGameIndex));
+        threads.emplace_back(runSingleGameFromQueue, std::ref(gamesList), _config.turnLimit, std::ref(nextGameIndex), std::ref(_completedGames));
     }
     
     int count = 0;
@@ -51,8 +53,9 @@ void Simulation::runParallelMontecarloSimulation() {
 
 void Simulation::runSequentialMontecarloSimulation() {
     for (uint64_t i = 0; i < _config.gameCount; ++i) {
-        runSingleGame(_config, _config.turnLimit);
+        runSingleGame(_config, _config.turnLimit, _completedGames);
         std::cout << "Completed game " << (i + 1) << " of " << _config.gameCount << std::endl;
+        _completedGames.fetch_add(1, std::memory_order_relaxed);
         this->_progressView.updateProgress(i + 1, _config.gameCount);
     }
 }

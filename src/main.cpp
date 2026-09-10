@@ -1,6 +1,5 @@
 #include "SimulationConfig.hpp"
 #include "ConfigParser.hpp"
-#include "Simulation.hpp"
 #include "ImGuiFactory.hpp"
 #include "MainController.hpp"
 

@@ -20,7 +20,7 @@ class MainController {
 
             _simulation = std::make_unique<Simulation>(config, *_progressView);
             _workerThread = std::thread([this]() {
-                this->_simulation->runParallelMontecarloSimulation();
+                this->_simulation->run();
             });
     }
 
