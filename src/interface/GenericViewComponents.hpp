@@ -13,6 +13,8 @@ class IMainWindow {
 public:
     virtual ~IMainWindow() = default;
     virtual void setMainView(IView* displayView) = 0;
+    virtual bool openWindow(int width, int height, const std::string_view title) = 0;
+    virtual void closeWindow() = 0;
     virtual void display() = 0;
 };
 

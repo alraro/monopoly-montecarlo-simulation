@@ -1,5 +1,6 @@
 #include "Simulation.hpp"
 #include "Game.hpp"
+#include "Logger.hpp"
 #include <thread>
 #include <iostream>
 
@@ -61,12 +62,11 @@ void Simulation::runSequentialMontecarloSimulation() {
 }
 
 void Simulation::run() {
-
     if (_config.runInParallel) {
-        _config.logLevel = LogLevel::None;
-        Logger::setLogLevel(_config.logLevel);
+        Logger::setLogLevel(_config.logLevel = LogLevel::None);
         runParallelMontecarloSimulation();
     } else {
+        Logger::setLogLevel(_config.logLevel);
         runSequentialMontecarloSimulation();
     }
 }

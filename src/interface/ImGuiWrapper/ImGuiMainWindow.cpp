@@ -4,15 +4,32 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
-ImGuiMainWindow::ImGuiMainWindow() {
-    if (!glfwInit()) {
-        Logger::error("Couldn't load graphical interface. Exiting");
-        exit(1);
+ImGuiMainWindow::ImGuiMainWindow(): _window(nullptr), _isWindowOpen(false) {}
+
+ImGuiMainWindow::~ImGuiMainWindow() {
+    this->closeWindow();
+}
+
+bool ImGuiMainWindow::openWindow(int width, int height, const std::string_view title) {
+    if (_isWindowOpen) {
+        return true; 
     }
+
+    if (!glfwInit()) {
+        Logger::error("Couldn't load graphical interface. glfwInit failed.");
+        return false;
+    }
+    
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    _window = glfwCreateWindow(1280, 720, "Monopoly Simulator", nullptr, nullptr);
+    _window = glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+    if (!_window) {
+        Logger::error("Failed to create GLFW window.");
+        glfwTerminate();
+        return false;
+    }
+
     glfwMakeContextCurrent(_window);
     glfwSwapInterval(1);
 
@@ -20,14 +37,25 @@ ImGuiMainWindow::ImGuiMainWindow() {
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(_window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
+
+    _isWindowOpen = true;
+    return true;
 }
 
-ImGuiMainWindow::~ImGuiMainWindow() {
+void ImGuiMainWindow::closeWindow() {
+    if (!_isWindowOpen) return;
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    glfwDestroyWindow(_window);
+
+    if (_window) {
+        glfwDestroyWindow(_window);
+        _window = nullptr;
+    }
     glfwTerminate();
+
+    _isWindowOpen = false;
 }
 
 void ImGuiMainWindow::setMainView(IView* displayView) {
