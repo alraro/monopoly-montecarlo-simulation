@@ -1,6 +1,5 @@
 #pragma once
 #include "GenericViewComponents.hpp"
-#include "Logger.hpp"
 #include "imgui.h"
 #include <vector>
 

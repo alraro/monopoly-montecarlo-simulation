@@ -5,7 +5,7 @@ LDFLAGS      = -lglfw -lGL -ldl -lpthread
 MAKEFLAGS    = -j$(shell nproc)
 
 ifeq ($(MODE), release)
-    CXXFLAGS += -O3 -march=native -flto -fno-exceptions -DNDEBUG
+    CXXFLAGS += -O3 -march=native -flto=auto -fno-exceptions -DNDEBUG
     LDFLAGS  += -flto=auto
 else
     SANFLAGS := -fsanitize=address,undefined
