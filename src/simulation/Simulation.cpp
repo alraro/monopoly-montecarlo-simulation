@@ -5,39 +5,33 @@
 #include <iostream>
 
 namespace {
-    void runGameQueue(std::vector<Game> &gameList, size_t turnLimit, std::atomic<size_t> &nextGameIndex, std::atomic<uint64_t> &completedGames) {
-        while (true) {
-                size_t index = nextGameIndex.fetch_add(1, std::memory_order_relaxed);
-                if (index >= gameList.size()) {
-                    return ;
-                }
-                gameList[index].play(turnLimit);
-                completedGames.fetch_add(1, std::memory_order_relaxed);
-        }
+    void runSingleGame(const SimulationConfig &config, GameId gameId) {
+        Game game(config, gameId);
+        game.play();
     }
 
-    void runSingleGame(const SimulationConfig &rules, size_t turnLimit) {
-        static GameId gameCounter = 0;
-        Game game(rules, gameCounter++);
-        game.play(turnLimit);
+    void runGamesWorker(const SimulationConfig &config, size_t threadIndex, std::atomic<uint64_t> &completedGames) {
+        uint64_t baseGamesPerThread = config.gameCount / config.numThreads;
+        uint64_t remainder = config.gameCount % config.numThreads;
+
+        uint64_t gamesForThisThread = baseGamesPerThread + (threadIndex < remainder ? 1 : 0);
+        uint64_t startIndex = (baseGamesPerThread * threadIndex) + std::min(threadIndex, remainder);
+        uint64_t endIndex = startIndex + gamesForThisThread;
+
+        for (uint64_t i = startIndex; i < endIndex; ++i) {
+            runSingleGame(config, i);
+            completedGames.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 }
 
 void Simulation::runParallelMontecarloSimulation() {
 
     std::vector<std::thread> threads;
-    std::atomic<size_t> nextGameIndex(0);
-
-    std::vector<Game> gamesList;
-    gamesList.reserve(_config.gameCount);
-
-    for (size_t i = 0; i < _config.gameCount; ++i) {
-        gamesList.emplace_back(_config, static_cast<GameId>(i));
-    }
 
     threads.reserve(_config.numThreads);
     for (size_t i = 0; i < _config.numThreads; ++i) {
-        threads.emplace_back(runGameQueue, std::ref(gamesList), _config.turnLimit, std::ref(nextGameIndex), std::ref(_completedGames));
+        threads.emplace_back(runGamesWorker, std::ref(_config), i, std::ref(_completedGames));
     }
     
     uint64_t lastCompletedCount = 0;

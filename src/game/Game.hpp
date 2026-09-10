@@ -37,7 +37,7 @@ class Game {
     public:
         Game(const SimulationConfig &config, GameId gameId);
 
-        void play(size_t numTurns);
+        void play();
 };
 
 Board getBoardFromRules(const SimulationConfig &config);

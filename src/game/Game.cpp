@@ -184,15 +184,15 @@ void Game::_exportPlayersStatisticsToCSV(std::string_view fileName) const {
     file.close();
 }
 
-void Game::play(size_t numTurns) {
-    Logger::info("Starting simulation with ", numTurns, " turns.");
+void Game::play() {
+    Logger::info("Starting simulation with ", _config.turnLimit, " turns.");
 
-    for (size_t turn = 0; turn < numTurns; ++turn) {
+    for (size_t turn = 0; turn < _config.turnLimit; ++turn) {
         if (turn > 0) {
             Logger::info("");
         }
         Logger::info("========== Turn ", (turn + 1), " ==========");
-        Logger::progress(turn, numTurns);
+        Logger::progress(turn, _config.turnLimit);
         Player &currentPlayer = _players[_currentPlayerIndex];
         _playPlayerTurn(currentPlayer);
 
