@@ -10,6 +10,7 @@
 
 class Game {
     private:
+        bool                            &_shouldStop;
         const SimulationConfig          &_config;
         GameId                          _gameId;
         Board                           _board;
@@ -35,7 +36,7 @@ class Game {
         void _printStatistics() const;
 
     public:
-        Game(const SimulationConfig &config, GameId gameId);
+        Game(const SimulationConfig &config, GameId gameId, bool &shouldStop);
 
         void play();
 };

@@ -11,7 +11,8 @@
 #include <system_error>
 #include <format>
 
-Game::Game(const SimulationConfig &config, GameId gameId) : 
+Game::Game(const SimulationConfig &config, GameId gameId, bool &shouldStop) : 
+            _shouldStop(shouldStop),
             _config(config),
             _gameId(gameId),
             _board(getBoardFromRules(config)),
@@ -143,13 +144,13 @@ std::ofstream Game::_createStatsFile(std::string_view fileName) const {
 
     if (ec) {
         Logger::error("Failed to create game directory: ", _config.baseDir + "/" + _config.simulationName + "/game_" + std::to_string(_gameId), ". Error: ", ec.message());
-        exit(1);
+        return std::ofstream();
     }
 
     std::ofstream file(dirPath / fileName);
     if (!file.is_open()) {
         Logger::error("Failed to open file for writing: ", dirPath / fileName);
-        exit(1);
+        return std::ofstream();
     }
 
     return file;
@@ -157,6 +158,9 @@ std::ofstream Game::_createStatsFile(std::string_view fileName) const {
 
 void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
     std::ofstream file = _createStatsFile(fileName);
+    if (!file.is_open()) {
+        return;
+    }
 
     file << "square_name,total_landings\n";
     for (unsigned int i = 0; i < _board.squares.size(); ++i) {
@@ -166,9 +170,11 @@ void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
     file.close();
 }
 
-
 void Game::_exportPlayersStatisticsToCSV(std::string_view fileName) const {
     std::ofstream file = _createStatsFile(fileName);
+    if (!file.is_open()) {
+        return;
+    }
 
     file << "player_id,player_name,total_turns,turns_spent_in_jail,times_jailed,total_dice_rolls,total_doubles_rolled\n";
     for (const auto &player : _players) {
@@ -190,6 +196,9 @@ void Game::play() {
     for (size_t turn = 0; turn < _config.turnLimit; ++turn) {
         if (turn > 0) {
             Logger::info("");
+        }
+        if (_shouldStop) {
+            return ;
         }
         Logger::info("========== Turn ", (turn + 1), " ==========");
         Logger::progress(turn, _config.turnLimit);

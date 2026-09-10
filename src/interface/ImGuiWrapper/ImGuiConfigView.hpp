@@ -25,7 +25,10 @@ class ImGuiConfigView : public IConfigView {
             ImGui::InputScalar("Max turns per game", ImGuiDataType_U64, &_config.turnLimit);
             ImGui::InputScalar("Random seed", ImGuiDataType_U64, &_config.seed);
             ImGui::InputScalar("Game count", ImGuiDataType_U64, &_config.gameCount);
-            ImGui::InputScalar("Number of threads", ImGuiDataType_U32, &_config.numThreads);
+
+            unsigned int minThreads = 1;
+            unsigned int maxThreads = std::thread::hardware_concurrency();
+            ImGui::SliderScalar("Number of threads", ImGuiDataType_U32, &_config.numThreads, &minThreads, &maxThreads);
 
             ImGui::InputText("Base Directory", _baseDirBuffer, BASEDIRBUFFERSIZE);
             ImGui::InputText("Simulation Name", _simulationNameBuffer, SIMULATIONNAMEBUFFERSIZE);
@@ -45,7 +48,7 @@ class ImGuiConfigView : public IConfigView {
                     if (_baseDirBuffer[0] != '\0') {
                         _config.baseDir = std::string(_baseDirBuffer);
                     }
-                    
+
                     if (_simulationNameBuffer[0] != '\0') {
                         _config.simulationName = std::string(_simulationNameBuffer);
                     }

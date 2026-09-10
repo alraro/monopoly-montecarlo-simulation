@@ -52,9 +52,25 @@ class MainController {
         void start() {
             if (_simulationConfig.hasInterface) {
                 _mainWindow->openWindow(1280, 720, "Monopoly Simulator");
+
                 _configView->setOnRunCallback([this](const SimulationConfig& conf) { 
                     this->transitionToSimulation(conf); 
                 });
+
+                _progressView->setOnCancelCallback([this]() {
+                    if (this->_simulation) {
+                        this->_simulation->stop();
+                    }
+                });
+
+                _progressView->setOnGoToConfigCallback([this]() {
+                    if (this->_simulation) {
+                        this->_simulation->stop();
+                    }
+                    this->_mainWindow->setMainView(this->_configView.get());
+                });
+
+
                 _mainWindow->setMainView(_configView.get());
                 _mainWindow->display();
             } else {
