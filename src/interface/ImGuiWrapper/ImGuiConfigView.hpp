@@ -30,7 +30,7 @@ class ImGuiConfigView : public IConfigView {
             ImGui::InputText("Base Directory", _baseDirBuffer, BASEDIRBUFFERSIZE);
             ImGui::InputText("Simulation Name", _simulationNameBuffer, SIMULATIONNAMEBUFFERSIZE);
 
-            if (ImGui::Combo("Log Level", &_selectedLogLevelIndex, Logger::logLevelStrings, IM_ARRAYSIZE(Logger::logLevelStrings))) {
+            if (ImGui::Combo("Log Level", &_selectedLogLevelIndex, Logger::logLevelStrings, Logger::LOG_LEVEL_COUNT)) {
                 _config.logLevel = Logger::getLogLevelFromName(Logger::logLevelStrings[_selectedLogLevelIndex]).value_or(LogLevel::Info);
             }
 
@@ -42,8 +42,13 @@ class ImGuiConfigView : public IConfigView {
             if (ImGui::Button("Run Simulation")) {
                 if (_runCallback) {
 
-                    _config.baseDir = std::string(_baseDirBuffer);
-                    _config.simulationName = std::string(_simulationNameBuffer);
+                    if (_baseDirBuffer[0] != '\0') {
+                        _config.baseDir = std::string(_baseDirBuffer);
+                    }
+                    
+                    if (_simulationNameBuffer[0] != '\0') {
+                        _config.simulationName = std::string(_simulationNameBuffer);
+                    }
 
                     // Temporary hardcoded players for demonstration purposes
                     std::vector<PlayerInfo> players = {

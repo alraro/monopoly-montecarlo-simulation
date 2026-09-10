@@ -15,10 +15,11 @@ enum class LogLevel {
 };
 
 namespace Logger {
+    inline constexpr int LOG_LEVEL_COUNT = 5;
     inline LogLevel currentLevel        =   LogLevel::Info;
     inline int      lastPercentPrinted  =   -1;
 
-    inline constexpr const char *logLevelStrings[5] = {
+    inline constexpr const char *logLevelStrings[LOG_LEVEL_COUNT] = {
         "none",
         "error",
         "progress",
@@ -26,7 +27,7 @@ namespace Logger {
         "debug"
     };
 
-    inline constexpr std::array<std::pair<std::string_view, LogLevel>, 5> logLevelsNames = {{
+    inline constexpr std::array<std::pair<std::string_view, LogLevel>, LOG_LEVEL_COUNT> logLevelsNames = {{
         {"none",     LogLevel::None},
         {"error",    LogLevel::Error},
         {"progress", LogLevel::Progress},
