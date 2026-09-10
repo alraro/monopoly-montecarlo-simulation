@@ -18,11 +18,19 @@ namespace Logger {
     inline LogLevel currentLevel        =   LogLevel::Info;
     inline int      lastPercentPrinted  =   -1;
 
+    inline constexpr const char *logLevelStrings[5] = {
+        "none",
+        "error",
+        "progress",
+        "info",
+        "debug"
+    };
+
     inline constexpr std::array<std::pair<std::string_view, LogLevel>, 5> logLevelsNames = {{
         {"none",     LogLevel::None},
+        {"error",    LogLevel::Error},
         {"progress", LogLevel::Progress},
         {"info",     LogLevel::Info},
-        {"error",    LogLevel::Error},
         {"debug",    LogLevel::Debug},
     }};
 
@@ -53,7 +61,7 @@ namespace Logger {
         constexpr int increment = 5;
         constexpr int barWidth = 20;  // 20 segmentos = cada uno vale 5%
 
-        if (currentLevel != LogLevel::Progress || total == 0) {
+        if (currentLevel < LogLevel::Progress || total == 0) {
             return;
         }
 

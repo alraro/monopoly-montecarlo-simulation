@@ -2,7 +2,6 @@
 #include "Game.hpp"
 #include "Logger.hpp"
 #include <thread>
-#include <iostream>
 
 namespace {
     void runSingleGame(const SimulationConfig &config, GameId gameId) {
@@ -46,16 +45,15 @@ void Simulation::runParallelMontecarloSimulation() {
         if (thread.joinable()) {
             thread.join();
             ++count;
-            std::cout << "Completed thread " << count << " of " << _config.numThreads << std::endl;
+            Logger::info("Completed thread ", count, " of ", _config.numThreads);
         }
     }
 }
 
-
 void Simulation::runSequentialMontecarloSimulation() {
     for (uint64_t i = 0; i < _config.gameCount; ++i) {
-        runSingleGame(_config, _config.turnLimit);
-        std::cout << "Completed game " << (i + 1) << " of " << _config.gameCount << std::endl;
+        runSingleGame(_config, i);
+        Logger::info("Completed game ", (i + 1), " of ", _config.gameCount);
         _completedGames.fetch_add(1, std::memory_order_relaxed);
         this->_progressView.updateProgress(i + 1, _config.gameCount);
     }

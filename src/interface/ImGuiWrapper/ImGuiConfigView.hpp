@@ -1,12 +1,18 @@
 #pragma once
 #include "GenericViewComponents.hpp"
+#include "Logger.hpp"
 #include "imgui.h"
 #include <vector>
 
 class ImGuiConfigView : public IConfigView {
     private:
+        constexpr static size_t BASEDIRBUFFERSIZE = 200;
+        constexpr static size_t SIMULATIONNAMEBUFFERSIZE = 200;
         SimulationConfig   &_config;
         RunCallback         _runCallback;
+        int                 _selectedLogLevelIndex = 0;
+        char                _baseDirBuffer[BASEDIRBUFFERSIZE] = {0};
+        char                _simulationNameBuffer[SIMULATIONNAMEBUFFERSIZE] = {0};
     public:
         ImGuiConfigView(SimulationConfig& config) : _config(config) {};
         void setOnRunCallback(RunCallback callback) override {
@@ -16,8 +22,17 @@ class ImGuiConfigView : public IConfigView {
         void renderFrame() override {
             ImGui::Begin("Simulation Configuration");
 
-            ImGui::InputScalar("Game count", ImGuiDataType_U64, &_config.gameCount);
             ImGui::InputScalar("Max turns per game", ImGuiDataType_U64, &_config.turnLimit);
+            ImGui::InputScalar("Random seed", ImGuiDataType_U64, &_config.seed);
+            ImGui::InputScalar("Game count", ImGuiDataType_U64, &_config.gameCount);
+            ImGui::InputScalar("Number of threads", ImGuiDataType_U32, &_config.numThreads);
+
+            ImGui::InputText("Base Directory", _baseDirBuffer, BASEDIRBUFFERSIZE);
+            ImGui::InputText("Simulation Name", _simulationNameBuffer, SIMULATIONNAMEBUFFERSIZE);
+
+            if (ImGui::Combo("Log Level", &_selectedLogLevelIndex, Logger::logLevelStrings, IM_ARRAYSIZE(Logger::logLevelStrings))) {
+                _config.logLevel = Logger::getLogLevelFromName(Logger::logLevelStrings[_selectedLogLevelIndex]).value_or(LogLevel::Info);
+            }
 
             ImGui::Checkbox("Run in parallel", &_config.runInParallel);
             ImGui::Checkbox("Export statistics to CSV", &_config.exportStatistics);
@@ -26,6 +41,9 @@ class ImGuiConfigView : public IConfigView {
 
             if (ImGui::Button("Run Simulation")) {
                 if (_runCallback) {
+
+                    _config.baseDir = std::string(_baseDirBuffer);
+                    _config.simulationName = std::string(_simulationNameBuffer);
 
                     // Temporary hardcoded players for demonstration purposes
                     std::vector<PlayerInfo> players = {
