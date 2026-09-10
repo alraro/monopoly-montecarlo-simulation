@@ -8,6 +8,7 @@ class ImGuiConfigView : public IConfigView {
         SimulationConfig _config;
         RunCallback _runCallback;
     public:
+        ImGuiConfigView(SimulationConfig& config) : _config(config) {};
         void setOnRunCallback(RunCallback callback) override {
             _runCallback = callback;
         }

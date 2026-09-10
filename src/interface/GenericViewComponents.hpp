@@ -34,6 +34,6 @@ class IGUIFactory {
 public:
     virtual ~IGUIFactory() = default;
     virtual std::unique_ptr<IMainWindow> createMainWindow() = 0;
-    virtual std::unique_ptr<IConfigView> createConfigView() = 0;
+    virtual std::unique_ptr<IConfigView> createConfigView(SimulationConfig &config) = 0;
     virtual std::unique_ptr<IProgressView> createProgressView() = 0;
 };

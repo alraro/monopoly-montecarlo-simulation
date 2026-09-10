@@ -6,13 +6,12 @@
 #include "SimulationConfig.hpp"
 #include "ConfigParser.hpp"
 
-
 class MainController {
     private:
+        SimulationConfig                  _simulationConfig;
         std::unique_ptr<IMainWindow>      _mainWindow;
         std::unique_ptr<IConfigView>      _configView;
         std::unique_ptr<IProgressView>    _progressView;
-        SimulationConfig                  _simulationConfig;
 
         std::unique_ptr<Simulation>       _simulation;
         std::thread                       _workerThread;
@@ -31,17 +30,17 @@ class MainController {
 
     public:
         MainController(IGUIFactory &guiFactory, int argc, char **argv): 
+            _simulationConfig(ConfigParser::configFromCommandLine(argc, argv)),
             _mainWindow(guiFactory.createMainWindow()), 
-            _configView(guiFactory.createConfigView()), 
-            _progressView(guiFactory.createProgressView()),
-            _simulationConfig(ConfigParser::configFromCommandLine(argc, argv))
+            _configView(guiFactory.createConfigView(_simulationConfig)),
+            _progressView(guiFactory.createProgressView())
         {};
 
         MainController(IGUIFactory &guiFactory): 
+            _simulationConfig(),
             _mainWindow(guiFactory.createMainWindow()), 
-            _configView(guiFactory.createConfigView()), 
-            _progressView(guiFactory.createProgressView()),
-            _simulationConfig()
+            _configView(guiFactory.createConfigView(_simulationConfig)),
+            _progressView(guiFactory.createProgressView())
         {};
 
         ~MainController() {

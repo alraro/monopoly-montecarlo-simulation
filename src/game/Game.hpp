@@ -6,7 +6,6 @@
 # include "GameStatistics.hpp"
 # include "SimulationConfig.hpp"
 # include "Dice.hpp"
-#include <filesystem>
 #include <string_view>
 
 class Game {
