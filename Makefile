@@ -110,4 +110,7 @@ bear: fclean
 release:
 	@$(MAKE) MODE=release re
 
+deps:
+	@sudo apt-get install bear libglfw3-dev libgl1-mesa-dev
+
 .PHONY: all clean fclean re bear release
