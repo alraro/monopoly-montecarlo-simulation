@@ -66,6 +66,10 @@ void ImGuiMainWindow::display() {
     while (!glfwWindowShouldClose(_window)) {
         glfwPollEvents();
 
+        if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(_window, GLFW_TRUE);
+        }
+
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();

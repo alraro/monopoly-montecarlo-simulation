@@ -20,7 +20,7 @@ class MainController {
             if (!config.isValid()) return;
 
             _mainWindow->setMainView(_progressView.get());
-            _progressView->initializeSimulationStart();
+            _progressView->initializeSimulationStart(config.gameCount);
 
             _simulation = std::make_unique<Simulation>(config, *_progressView);
             _workerThread = std::thread([this]() {

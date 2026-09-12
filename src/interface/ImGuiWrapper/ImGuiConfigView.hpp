@@ -1,5 +1,6 @@
 #pragma once
 #include "GenericViewComponents.hpp"
+#include "FullScreenWindow.hpp"
 #include "Logger.hpp"
 #include "imgui.h"
 #include <vector>
@@ -20,7 +21,7 @@ class ImGuiConfigView : public IConfigView {
         }
 
         void renderFrame() override {
-            ImGui::Begin("Simulation Configuration");
+            FullScreenWindow window("Simulation Configuration");
 
             ImGui::InputScalar("Max turns per game", ImGuiDataType_U64, &_config.turnLimit);
             ImGui::InputScalar("Random seed", ImGuiDataType_U64, &_config.seed);
@@ -75,8 +76,5 @@ class ImGuiConfigView : public IConfigView {
                     _runCallback(_config);
                 }
             }
-
-
-            ImGui::End();
         }
 };

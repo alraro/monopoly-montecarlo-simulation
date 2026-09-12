@@ -20,6 +20,10 @@ namespace {
 
         for (uint64_t i = startIndex; i < endIndex; ++i) {
             runSingleGame(config, i, shouldStop);
+            if (shouldStop.load(std::memory_order_relaxed)) {
+                Logger::info("Thread ", threadIndex, " stopping early due to stop signal.");
+                break;
+            }
             completedGames.fetch_add(1, std::memory_order_relaxed);
         }
     }
@@ -37,11 +41,10 @@ void Simulation::runParallelMontecarloSimulation() {
     uint64_t lastCompletedCount = 0;
     while (lastCompletedCount < _config.gameCount) {
         if (this->isStopped()) {
-            Logger::info("Simulation stopped by user.");
             break;
         }
         lastCompletedCount = _completedGames.load(std::memory_order_relaxed);
-        this->_progressView.updateProgress(lastCompletedCount, _config.gameCount);
+        this->_progressView.updateProgress(lastCompletedCount);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
@@ -57,14 +60,14 @@ void Simulation::runParallelMontecarloSimulation() {
 
 void Simulation::runSequentialMontecarloSimulation() {
     for (uint64_t i = 0; i < _config.gameCount; ++i) {
+        runSingleGame(_config, i, this->_shouldStop);
+        Logger::info("Completed game ", (i + 1), " of ", _config.gameCount);
         if (this->isStopped()) {
             Logger::info("Simulation stopped by user.");
             return ;
         }
-        runSingleGame(_config, i, this->_shouldStop);
-        Logger::info("Completed game ", (i + 1), " of ", _config.gameCount);
         _completedGames.fetch_add(1, std::memory_order_relaxed);
-        this->_progressView.updateProgress(i + 1, _config.gameCount);
+        this->_progressView.updateProgress(i + 1);
     }
 }
 
