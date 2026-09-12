@@ -10,9 +10,9 @@ class Dice {
         std::uniform_int_distribution<int> _dieDistribution{1, 6};
     public:
         Dice() : _generator(std::random_device{}()) {}
-        Dice(uint32_t seed) : _generator(seed) {}
+        Dice(uint64_t seed) : _generator(seed) {}
 
-        void seed(uint32_t seed) {
+        void seed(uint64_t seed) {
             _generator.seed(seed);
         }
 

@@ -19,7 +19,7 @@ Game::Game(const SimulationConfig &config, GameId gameId, std::atomic<bool> &sho
             _players(getPlayersFromRules(config)),
             _currentPlayerIndex(0),
             _gameStatistics(getGameStatisticsFromRules(config)),
-            _dice()
+            _dice(config.seed + gameId)
 {
     assert(!_players.empty() && "Precondition failed: There must be at least one player in the game.");
     assert(!_board.squares.empty() && "Precondition failed: There must be at least one square on the board.");
