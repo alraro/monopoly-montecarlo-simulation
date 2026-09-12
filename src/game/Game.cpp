@@ -11,7 +11,7 @@
 #include <system_error>
 #include <format>
 
-Game::Game(const SimulationConfig &config, GameId gameId, bool &shouldStop) : 
+Game::Game(const SimulationConfig &config, GameId gameId, std::atomic<bool> &shouldStop) : 
             _shouldStop(shouldStop),
             _config(config),
             _gameId(gameId),
@@ -197,7 +197,7 @@ void Game::play() {
         if (turn > 0) {
             Logger::info("");
         }
-        if (_shouldStop) {
+        if (this->_shouldStop.load(std::memory_order_relaxed)) {
             return ;
         }
         Logger::info("========== Turn ", (turn + 1), " ==========");

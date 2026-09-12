@@ -7,10 +7,11 @@
 # include "SimulationConfig.hpp"
 # include "Dice.hpp"
 #include <string_view>
+#include <atomic>
 
 class Game {
     private:
-        bool                            &_shouldStop;
+        std::atomic<bool>               &_shouldStop;
         const SimulationConfig          &_config;
         GameId                          _gameId;
         Board                           _board;
@@ -36,7 +37,7 @@ class Game {
         void _printStatistics() const;
 
     public:
-        Game(const SimulationConfig &config, GameId gameId, bool &shouldStop);
+        Game(const SimulationConfig &config, GameId gameId, std::atomic<bool> &shouldStop);
 
         void play();
 };

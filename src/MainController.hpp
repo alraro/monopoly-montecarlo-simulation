@@ -17,10 +17,10 @@ class MainController {
         std::thread                       _workerThread;
 
         void transitionToSimulation(const SimulationConfig& config) {
-            _mainWindow->setMainView(_progressView.get());
-            _progressView->setupProgressBar(config.gameCount);
-
             if (!config.isValid()) return;
+
+            _mainWindow->setMainView(_progressView.get());
+            _progressView->initializeSimulationStart();
 
             _simulation = std::make_unique<Simulation>(config, *_progressView);
             _workerThread = std::thread([this]() {
@@ -61,11 +61,17 @@ class MainController {
                     if (this->_simulation) {
                         this->_simulation->stop();
                     }
+                    if (this->_workerThread.joinable()) {
+                        this->_workerThread.join();
+                    }
                 });
 
                 _progressView->setOnGoToConfigCallback([this]() {
                     if (this->_simulation) {
                         this->_simulation->stop();
+                    }
+                    if (this->_workerThread.joinable()) {
+                        this->_workerThread.join();
                     }
                     this->_mainWindow->setMainView(this->_configView.get());
                 });

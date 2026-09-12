@@ -28,7 +28,7 @@ class IProgressView : public IView {
 public:
     using CancelCallback = std::function<void()>;
     using GoToConfigCallback = std::function<void()>;
-    virtual void setupProgressBar(uint64_t totalGames) = 0;
+    virtual void initializeSimulationStart() = 0;
     virtual void setOnCancelCallback(CancelCallback callback) = 0;
     virtual void setOnGoToConfigCallback(GoToConfigCallback callback) = 0;
     virtual void updateProgress(uint64_t completedCount, uint64_t totalGames) = 0;

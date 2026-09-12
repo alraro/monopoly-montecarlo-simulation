@@ -2,14 +2,15 @@
 #include "Game.hpp"
 #include "Logger.hpp"
 #include <thread>
+#include <atomic>
 
 namespace {
-    void runSingleGame(const SimulationConfig &config, GameId gameId, bool &shouldStop) {
+    void runSingleGame(const SimulationConfig &config, GameId gameId, std::atomic<bool> &shouldStop) {
         Game game(config, gameId, shouldStop);
         game.play();
     }
 
-    void runGamesWorker(const SimulationConfig &config, size_t threadIndex, std::atomic<uint64_t> &completedGames, bool &shouldStop) {
+    void runGamesWorker(const SimulationConfig &config, size_t threadIndex, std::atomic<uint64_t> &completedGames, std::atomic<bool> &shouldStop) {
         uint64_t baseGamesPerThread = config.gameCount / config.numThreads;
         uint64_t remainder = config.gameCount % config.numThreads;
 
@@ -35,7 +36,7 @@ void Simulation::runParallelMontecarloSimulation() {
     
     uint64_t lastCompletedCount = 0;
     while (lastCompletedCount < _config.gameCount) {
-        if (_shouldStop) {
+        if (this->isStopped()) {
             Logger::info("Simulation stopped by user.");
             break;
         }
@@ -56,11 +57,11 @@ void Simulation::runParallelMontecarloSimulation() {
 
 void Simulation::runSequentialMontecarloSimulation() {
     for (uint64_t i = 0; i < _config.gameCount; ++i) {
-        if (_shouldStop) {
+        if (this->isStopped()) {
             Logger::info("Simulation stopped by user.");
             return ;
         }
-        runSingleGame(_config, i, _shouldStop);
+        runSingleGame(_config, i, this->_shouldStop);
         Logger::info("Completed game ", (i + 1), " of ", _config.gameCount);
         _completedGames.fetch_add(1, std::memory_order_relaxed);
         this->_progressView.updateProgress(i + 1, _config.gameCount);
