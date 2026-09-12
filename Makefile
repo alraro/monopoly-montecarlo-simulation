@@ -5,7 +5,7 @@ LDFLAGS      = -lglfw -lGL -ldl -lpthread
 MAKEFLAGS    = -j$(shell nproc)
 
 ifeq ($(MODE), release)
-    CXXFLAGS += -O3 -march=native -flto -fno-exceptions -DNDEBUG
+    CXXFLAGS += -O3 -march=native -flto=auto -fno-exceptions -DNDEBUG
     LDFLAGS  += -flto=auto
 else
     SANFLAGS := -fsanitize=address,undefined
@@ -28,14 +28,21 @@ STRATEGYDIR     = $(BASEDIR)/strategy
 LOGGERDIR       = $(BASEDIR)/logger
 SIMULATIONDIR   = $(BASEDIR)/simulation
 
+INTERFACEDIR    = $(BASEDIR)/interface
+IMGUIWRAPPERDIR = $(INTERFACEDIR)/ImGuiWrapper
+
 LIBRARIESDIR    = $(BASEDIR)/libraries
 IMGUIDIR        = $(LIBRARIESDIR)/imgui
 IMGUIBACKENDDIR = $(IMGUIDIR)/backends
 
-INCLUDESDIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) \
+OWN_INC_DIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) \
                $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR) $(SIMULATIONDIR) \
-               $(LIBRARIESDIR) $(IMGUIDIR) $(IMGUIBACKENDDIR)
-INCLUDES     = $(addprefix -I, $(INCLUDESDIRS))
+               $(INTERFACEDIR) $(IMGUIWRAPPERDIR)
+
+EXTERNAL_INC_DIRS = $(LIBRARIESDIR) $(IMGUIDIR) $(IMGUIBACKENDDIR)
+
+# 3. Aplicar las banderas correctas a cada grupo
+INCLUDES = $(addprefix -I, $(OWN_INC_DIRS)) $(addprefix -isystem , $(EXTERNAL_INC_DIRS))
 
 BASESRC       = main.cpp
 BOARDSRC      =
@@ -46,6 +53,7 @@ EXTRASRC      =
 STRATEGYSRC   = BasicStrategy.cpp
 LOGGERSRC     =
 SIMULATIONSRC = Simulation.cpp ConfigParser.cpp
+IMGUIWRAPPERSRC = ImGuiMainWindow.cpp
 
 # Fuentes de ImGui corregidas (wildcard entrega ruta completa)
 IMGUISRC        = $(wildcard $(IMGUIDIR)/*.cpp)
@@ -62,6 +70,7 @@ SRC          = $(strip \
                $(addprefix $(LOGGERDIR)/, $(LOGGERSRC)) \
                $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
                $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC)) \
+               $(addprefix $(IMGUIWRAPPERDIR)/, $(IMGUIWRAPPERSRC)) \
                $(IMGUISRC) \
                $(IMGUIBACKENDSRC))
 
@@ -100,5 +109,8 @@ bear: fclean
 
 release:
 	@$(MAKE) MODE=release re
+
+deps:
+	@sudo apt-get install bear libglfw3-dev libgl1-mesa-dev
 
 .PHONY: all clean fclean re bear release

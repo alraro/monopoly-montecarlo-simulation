@@ -11,14 +11,15 @@
 #include <system_error>
 #include <format>
 
-Game::Game(const SimulationConfig &config, GameId gameId) : 
+Game::Game(const SimulationConfig &config, GameId gameId, std::atomic<bool> &shouldStop) : 
+            _shouldStop(shouldStop),
             _config(config),
             _gameId(gameId),
             _board(getBoardFromRules(config)),
             _players(getPlayersFromRules(config)),
             _currentPlayerIndex(0),
             _gameStatistics(getGameStatisticsFromRules(config)),
-            _dice()
+            _dice(config.seed + gameId)
 {
     assert(!_players.empty() && "Precondition failed: There must be at least one player in the game.");
     assert(!_board.squares.empty() && "Precondition failed: There must be at least one square on the board.");
@@ -143,13 +144,13 @@ std::ofstream Game::_createStatsFile(std::string_view fileName) const {
 
     if (ec) {
         Logger::error("Failed to create game directory: ", _config.baseDir + "/" + _config.simulationName + "/game_" + std::to_string(_gameId), ". Error: ", ec.message());
-        exit(1);
+        return std::ofstream();
     }
 
     std::ofstream file(dirPath / fileName);
     if (!file.is_open()) {
         Logger::error("Failed to open file for writing: ", dirPath / fileName);
-        exit(1);
+        return std::ofstream();
     }
 
     return file;
@@ -157,6 +158,9 @@ std::ofstream Game::_createStatsFile(std::string_view fileName) const {
 
 void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
     std::ofstream file = _createStatsFile(fileName);
+    if (!file.is_open()) {
+        return;
+    }
 
     file << "square_name,total_landings\n";
     for (unsigned int i = 0; i < _board.squares.size(); ++i) {
@@ -166,9 +170,11 @@ void Game::_exportSquaresStatisticsToCSV(std::string_view fileName) const {
     file.close();
 }
 
-
 void Game::_exportPlayersStatisticsToCSV(std::string_view fileName) const {
     std::ofstream file = _createStatsFile(fileName);
+    if (!file.is_open()) {
+        return;
+    }
 
     file << "player_id,player_name,total_turns,turns_spent_in_jail,times_jailed,total_dice_rolls,total_doubles_rolled\n";
     for (const auto &player : _players) {
@@ -184,15 +190,18 @@ void Game::_exportPlayersStatisticsToCSV(std::string_view fileName) const {
     file.close();
 }
 
-void Game::play(size_t numTurns) {
-    Logger::info("Starting simulation with ", numTurns, " turns.");
+void Game::play() {
+    Logger::info("Starting simulation with ", _config.turnLimit, " turns.");
 
-    for (size_t turn = 0; turn < numTurns; ++turn) {
+    for (size_t turn = 0; turn < _config.turnLimit; ++turn) {
         if (turn > 0) {
             Logger::info("");
         }
+        if (this->_shouldStop.load(std::memory_order_relaxed)) {
+            return ;
+        }
         Logger::info("========== Turn ", (turn + 1), " ==========");
-        Logger::progress(turn, numTurns);
+        Logger::progress(turn, _config.turnLimit);
         Player &currentPlayer = _players[_currentPlayerIndex];
         _playPlayerTurn(currentPlayer);
 

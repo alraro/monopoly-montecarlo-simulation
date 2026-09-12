@@ -4,7 +4,7 @@
 
 using PlayerId  =   uint32_t;
 using SquareId  =   uint32_t;
-using GameId    =   uint32_t;
+using GameId    =   uint64_t;
 using Money     =   int64_t;
 using StatCount =   uint32_t; // Counts of turns, landings, etc. should be non-negative and fit within 32 bits.
 

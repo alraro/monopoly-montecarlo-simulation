@@ -8,7 +8,7 @@
 
 constexpr uint64_t DEFAULT_TURNS = 1000;
 constexpr uint64_t DEFAULT_SEED = 123456;
-constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::Progress;
+constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::None;
 constexpr uint64_t DEFULT_GAME_COUNT = 100;
 
 struct SimulationConfig {
@@ -27,6 +27,8 @@ struct SimulationConfig {
     bool exportStatistics = true;
 
     bool runInParallel = false;
+
+    bool hasInterface = true;
 
     void addPlayer(PlayerId id, const std::string &name) {
         players.emplace_back(id, name);

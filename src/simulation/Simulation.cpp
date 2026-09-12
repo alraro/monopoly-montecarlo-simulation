@@ -1,69 +1,82 @@
 #include "Simulation.hpp"
 #include "Game.hpp"
+#include "Logger.hpp"
 #include <thread>
-#include <iostream>
-
-Simulation::Simulation(const SimulationConfig &config) : _config(config) {}
+#include <atomic>
 
 namespace {
-    void runSingleGameFromQueue(std::vector<Game> &gameList, size_t turnLimit, std::atomic<size_t> &nextGameIndex) {
-        while (true) {
-                size_t index = nextGameIndex.fetch_add(1, std::memory_order_relaxed);
-                if (index >= gameList.size()) {
-                    return ;
-                }
-                gameList[index].play(turnLimit);
-        }
+    void runSingleGame(const SimulationConfig &config, GameId gameId, std::atomic<bool> &shouldStop) {
+        Game game(config, gameId, shouldStop);
+        game.play();
     }
 
-    void runSingleGame(const SimulationConfig &rules, size_t turnLimit) {
-        static GameId gameCounter = 0;
-        Game game(rules, gameCounter++);
-        game.play(turnLimit);
+    void runGamesWorker(const SimulationConfig &config, size_t threadIndex, std::atomic<uint64_t> &completedGames, std::atomic<bool> &shouldStop) {
+        uint64_t baseGamesPerThread = config.gameCount / config.numThreads;
+        uint64_t remainder = config.gameCount % config.numThreads;
+
+        uint64_t gamesForThisThread = baseGamesPerThread + (threadIndex < remainder ? 1 : 0);
+        uint64_t startIndex = (baseGamesPerThread * threadIndex) + std::min(threadIndex, remainder);
+        uint64_t endIndex = startIndex + gamesForThisThread;
+
+        for (uint64_t i = startIndex; i < endIndex; ++i) {
+            runSingleGame(config, i, shouldStop);
+            if (shouldStop.load(std::memory_order_relaxed)) {
+                Logger::info("Thread ", threadIndex, " stopping early due to stop signal.");
+                break;
+            }
+            completedGames.fetch_add(1, std::memory_order_relaxed);
+        }
     }
 }
 
-void Simulation::runParallelMontecarloSimulation(size_t games, size_t turnLimit, size_t numThreads) {
+void Simulation::runParallelMontecarloSimulation() {
 
     std::vector<std::thread> threads;
-    std::atomic<size_t> nextGameIndex(0);
 
-    std::vector<Game> gamesList;
-    gamesList.reserve(games);
-
-    for (size_t i = 0; i < games; ++i) {
-        gamesList.emplace_back(_config, static_cast<GameId>(i));
-    }
-
-    threads.reserve(numThreads);
-    for (size_t i = 0; i < numThreads; ++i) {
-        threads.emplace_back(runSingleGameFromQueue, std::ref(gamesList), turnLimit, std::ref(nextGameIndex));
+    threads.reserve(_config.numThreads);
+    for (size_t i = 0; i < _config.numThreads; ++i) {
+        threads.emplace_back(runGamesWorker, std::ref(_config), i, std::ref(_completedGames), std::ref(_shouldStop));
     }
     
+    uint64_t lastCompletedCount = 0;
+    while (lastCompletedCount < _config.gameCount) {
+        if (this->isStopped()) {
+            break;
+        }
+        lastCompletedCount = _completedGames.load(std::memory_order_relaxed);
+        this->_progressView.updateProgress(lastCompletedCount);
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+
     int count = 0;
     for (auto &thread : threads) {
         if (thread.joinable()) {
             thread.join();
             ++count;
-            std::cout << "Completed thread " << count << " of " << numThreads << std::endl;
+            Logger::info("Completed thread ", count, " of ", _config.numThreads);
         }
     }
 }
 
-void Simulation::runSequentialMontecarloSimulation(size_t games, size_t turnLimit) {
-    for (size_t i = 0; i < games; ++i) {
-        runSingleGame(_config, turnLimit);
-        std::cout << "Completed game " << (i + 1) << " of " << games << std::endl;
+void Simulation::runSequentialMontecarloSimulation() {
+    for (uint64_t i = 0; i < _config.gameCount; ++i) {
+        runSingleGame(_config, i, this->_shouldStop);
+        Logger::info("Completed game ", (i + 1), " of ", _config.gameCount);
+        if (this->isStopped()) {
+            Logger::info("Simulation stopped by user.");
+            return ;
+        }
+        _completedGames.fetch_add(1, std::memory_order_relaxed);
+        this->_progressView.updateProgress(i + 1);
     }
 }
 
 void Simulation::run() {
-
     if (_config.runInParallel) {
-        _config.logLevel = LogLevel::None;
-        Logger::setLogLevel(_config.logLevel);
-        runParallelMontecarloSimulation(_config.gameCount, _config.turnLimit, _config.numThreads);
+        Logger::setLogLevel(_config.logLevel = LogLevel::None);
+        runParallelMontecarloSimulation();
     } else {
-        runSequentialMontecarloSimulation(_config.gameCount, _config.turnLimit);
+        Logger::setLogLevel(_config.logLevel);
+        runSequentialMontecarloSimulation();
     }
 }

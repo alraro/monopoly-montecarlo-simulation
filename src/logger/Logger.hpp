@@ -15,14 +15,23 @@ enum class LogLevel {
 };
 
 namespace Logger {
+    inline constexpr int LOG_LEVEL_COUNT = 5;
     inline LogLevel currentLevel        =   LogLevel::Info;
     inline int      lastPercentPrinted  =   -1;
 
-    inline constexpr std::array<std::pair<std::string_view, LogLevel>, 5> logLevelsNames = {{
+    inline constexpr const char *logLevelStrings[LOG_LEVEL_COUNT] = {
+        "none",
+        "error",
+        "progress",
+        "info",
+        "debug"
+    };
+
+    inline constexpr std::array<std::pair<std::string_view, LogLevel>, LOG_LEVEL_COUNT> logLevelsNames = {{
         {"none",     LogLevel::None},
+        {"error",    LogLevel::Error},
         {"progress", LogLevel::Progress},
         {"info",     LogLevel::Info},
-        {"error",    LogLevel::Error},
         {"debug",    LogLevel::Debug},
     }};
 
@@ -53,7 +62,7 @@ namespace Logger {
         constexpr int increment = 5;
         constexpr int barWidth = 20;  // 20 segmentos = cada uno vale 5%
 
-        if (currentLevel != LogLevel::Progress || total == 0) {
+        if (currentLevel < LogLevel::Progress || total == 0) {
             return;
         }
 

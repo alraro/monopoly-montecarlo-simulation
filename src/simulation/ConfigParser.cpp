@@ -54,6 +54,26 @@ namespace ConfigParser {
             {{"parallel", "p"}, [](SimulationConfig &config, const auto &) {
                 config.runInParallel = true;
             }},
+            {{"no-gui"}, [](SimulationConfig &config, const auto &) {
+                config.hasInterface = false;
+            }},
+           {{"default-board-setup"}, [](SimulationConfig &config, const auto &) {
+                    std::vector<PlayerInfo> players;
+                    players.emplace_back(0, "Player 1");
+                    players.emplace_back(1, "Player 2");
+
+                    std::vector<SquareInfo> squares;
+                    squares.emplace_back("Start", SquareType::Start);
+                    squares.emplace_back("Property 1", SquareType::Property);
+                    squares.emplace_back("Community Chest", SquareType::Community);
+                    squares.emplace_back("Property 2", SquareType::Property);
+                    squares.emplace_back("Go To Jail", SquareType::GoToJail);
+                    squares.emplace_back("Jail", SquareType::Jail);
+                    squares.emplace_back("Property 3", SquareType::Property);
+
+                    config.players = std::move(players);
+                    config.squares = std::move(squares);
+            }}
         };
         
         const std::unordered_map<std::string, ArgHandler> kArgHandlers = [] {
