@@ -37,7 +37,12 @@ void Game::_sendPlayerToJail(Player &player) {
 }
 
 SquareEffectResult Game::_movePlayerDiceRoll(Player &player, MonopolyDiceRollResult diceRoll) {
-    player.moveToSquare(static_cast<SquareId>((player.currentSquare + diceRoll.total()) % _board.squares.size()));
+    SquareId next = player.currentSquare + diceRoll.total();
+    while (next >= _board.squares.size()) {
+        next -= static_cast<SquareId>(_board.squares.size());
+    }
+    player.moveToSquare(next);
+
     const Square &currentSquare = _board.squares[player.currentSquare];
 
     this->_gameStatistics.recordLandingSquare(player.currentSquare);
@@ -207,7 +212,7 @@ void Game::play() {
         Player &currentPlayer = _players[_currentPlayerIndex];
         _playPlayerTurn(currentPlayer);
 
-        _currentPlayerIndex = static_cast<PlayerId>((_currentPlayerIndex + 1) % _players.size());
+        _currentPlayerIndex = static_cast<PlayerId>(_currentPlayerIndex + 1 == _players.size() ? 0 : _currentPlayerIndex + 1);
     }
 
     Logger::info("Simulation completed.");
