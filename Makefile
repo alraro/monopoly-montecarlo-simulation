@@ -1,21 +1,24 @@
 CXX          := c++
 WARNFLAGS    := -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wold-style-cast
-CXXFLAGS     := -std=c++23 -MMD -MP $(WARNFLAGS)
-LDFLAGS      := -lglfw -lGL -ldl -lpthread
-MAKEFLAGS    += -j$(shell nproc)
+CXXFLAGS     := -std=c++23 -MMD -MP
 
 # Configuración según el modo de compilación
 ifeq ($(MODE), release)
-    CXXFLAGS += -O3 -march=native -flto=auto -fno-exceptions -DNDEBUG
+    OPTFLAGS := -O3 -march=native -flto=auto -DNDEBUG
+    CXXFLAGS += $(OPTFLAGS) -fno-exceptions $(WARNFLAGS)
     LDFLAGS  += -flto=auto
 else
+    OPTFLAGS := -O0 -g
     SANFLAGS := -fsanitize=address,undefined
-    CXXFLAGS += -O0 -g $(SANFLAGS)
+    CXXFLAGS += $(OPTFLAGS) $(SANFLAGS) $(WARNFLAGS)
     LDFLAGS  += $(SANFLAGS)
 endif
 
+LDFLAGS      += -lglfw -lGL -ldl -lpthread
+MAKEFLAGS    += -j$(shell nproc)
+
 # Nombre del ejecutable
-NAME         := monopoly
+NAME         := monopoly-montecarlo
 
 # Directorios de salida
 BUILD_DIR    := build
@@ -56,33 +59,38 @@ $(BIN_DIR)/$(NAME): $(ALL_OBJ)
 	@$(CXX) $(ALL_OBJ) -o $@ $(LDFLAGS)
 	@echo "Construido ejecutable principal: $@"
 
-# Regla de compilación para CÓDIGO PROPIO (aplica advertencias estrictas)
+# Regla de compilación para CÓDIGO PROPIO (aplica advertencias estrictas y sanitizers)
 $(OBJ_DIR)/monopoly/%.o: monopoly/%.cpp
 	@mkdir -p $(dir $@)
 	@printf "Compilando monopoly %s\n" "$<"
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Regla de compilación para TERCEROS (silencia advertencias en ImGui)
+# Regla de compilación para TERCEROS (aplica optimización sin advertencias ni sanitizers)
 $(OBJ_DIR)/vendor/%.o: vendor/%.cpp
 	@mkdir -p $(dir $@)
 	@printf "Compilando vendor %s\n" "$<"
-	@$(CXX) -std=c++23 -MMD -MP -w $(INCLUDES) -c $< -o $@
+	@$(CXX) -std=c++23 -MMD -MP $(OPTFLAGS) -w $(INCLUDES) -c $< -o $@
 
 # Reglas utilitarias
 clean:
-	@rm -rf $(OBJ_DIR)
-	@echo "Objetos eliminados."
+	@rm -rf $(OBJ_DIR)/monopoly
+	@rm -f $(BIN_DIR)/$(NAME)
+	@echo "Objetos propios y binario eliminados."
 
-fclean: clean
+fclean:
 	@rm -rf $(BUILD_DIR)
-	@echo "Directorio de build eliminado."
+	@echo "Directorio de build eliminado completamente."
 
-re: fclean all
+re:
+	@$(MAKE) clean
+	@$(MAKE) all
 
 release:
-	@$(MAKE) MODE=release re
+	@$(MAKE) MODE=release fclean
+	@$(MAKE) MODE=release all
 
-bear: fclean
+bear:
+	@$(MAKE) fclean
 	@bear -- $(MAKE) MODE=release all
 
 -include $(DEPS)
