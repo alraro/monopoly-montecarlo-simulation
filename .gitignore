@@ -6,3 +6,5 @@ baseline.txt
 *.csv
 .cache
 imgui.ini
+mc-bench
+perf.data
