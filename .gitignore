@@ -5,3 +5,4 @@ baseline.txt
 *.csv
 .cache
 imgui.ini
+monopoly-montecarlo
