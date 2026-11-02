@@ -1,0 +1,24 @@
+#include <monopoly/strategy/BasicStrategy.hpp>
+
+namespace monopoly {
+
+BasicStrategy& BasicStrategy::getInstance() {
+    static BasicStrategy instance;
+    return instance;
+}
+
+PlayerStrategyActionResult BasicStrategy::decidePlayerAction() const {
+    PlayerStrategyActionResult result;
+    result.type = PlayerStrategyActionType::DoNothing;
+    return result;
+}
+
+JailedPlayerStrategyActionType BasicStrategy::decideJailedPlayerAction() const {
+    return JailedPlayerStrategyActionType::RollDice;
+}
+
+bool BasicStrategy::decideToBuyProperty() const {
+    return false;
+}
+
+}
