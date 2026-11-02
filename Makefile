@@ -1,116 +1,98 @@
-CXX          = c++
-WARNFLAGS    = -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wold-style-cast
-CXXFLAGS     = -std=c++23 -MMD -MP $(WARNFLAGS)
-LDFLAGS      = -lglfw -lGL -ldl -lpthread
-MAKEFLAGS    = -j$(shell nproc)
+CXX          := c++
+WARNFLAGS    := -Wall -Wextra -Wpedantic -Werror -Wshadow -Wconversion -Wold-style-cast
+CXXFLAGS     := -std=c++23 -MMD -MP
 
+# Configuración según el modo de compilación
 ifeq ($(MODE), release)
-    CXXFLAGS += -O3 -march=native -flto=auto -fno-exceptions -DNDEBUG
+    OPTFLAGS := -O3 -march=native -flto=auto -DNDEBUG
+    CXXFLAGS += $(OPTFLAGS) -fno-exceptions $(WARNFLAGS)
     LDFLAGS  += -flto=auto
 else
+    OPTFLAGS := -O0 -g
     SANFLAGS := -fsanitize=address,undefined
-    CXXFLAGS += -O0 -g $(SANFLAGS)
+    CXXFLAGS += $(OPTFLAGS) $(SANFLAGS) $(WARNFLAGS)
     LDFLAGS  += $(SANFLAGS)
 endif
 
-NAME         = monopoly
-MODULE_NAME  = monopoly
+LDFLAGS      += -lglfw -lGL -ldl -lpthread
+MAKEFLAGS    += -j$(shell nproc)
 
-OBJDIR       = obj
-BASEDIR      = src
+# Nombre del ejecutable
+NAME         := monopoly-montecarlo
 
-BOARDDIR        = $(BASEDIR)/board
-SQUARESDIR      = $(BASEDIR)/squares
-PLAYERDIR       = $(BASEDIR)/player
-GAMEDIR         = $(BASEDIR)/game
-EXTRADIR        = $(BASEDIR)/extra
-STRATEGYDIR     = $(BASEDIR)/strategy
-LOGGERDIR       = $(BASEDIR)/logger
-SIMULATIONDIR   = $(BASEDIR)/simulation
+# Directorios de salida
+BUILD_DIR    := build
+OBJ_DIR      := $(BUILD_DIR)/obj
+BIN_DIR      := $(BUILD_DIR)/bin
 
-INTERFACEDIR    = $(BASEDIR)/interface
-IMGUIWRAPPERDIR = $(INTERFACEDIR)/ImGuiWrapper
+# Rutas de inclusión
+INCLUDES     := -I. -isystem vendor/imgui -isystem vendor/imgui/backends
 
-LIBRARIESDIR    = $(BASEDIR)/libraries
-IMGUIDIR        = $(LIBRARIESDIR)/imgui
-IMGUIBACKENDDIR = $(IMGUIDIR)/backends
+# Listado explícito de fuentes del proyecto
+MONOPOLY_SRC := \
+    monopoly/main.cpp \
+    monopoly/game/Game.cpp \
+    monopoly/simulation/Simulation.cpp \
+    monopoly/simulation/ConfigParser.cpp \
+    monopoly/strategy/BasicStrategy.cpp \
+    monopoly/interface/imgui/ImGuiMainWindow.cpp
 
-OWN_INC_DIRS = $(BASEDIR) $(BOARDDIR) $(SQUARESDIR) $(PLAYERDIR) $(GAMEDIR) \
-               $(EXTRADIR) $(STRATEGYDIR) $(LOGGERDIR) $(SIMULATIONDIR) \
-               $(INTERFACEDIR) $(IMGUIWRAPPERDIR)
+# Fuentes de terceros (estáticas e inmutables)
+VENDOR_SRC   := \
+    $(wildcard vendor/imgui/*.cpp) \
+    vendor/imgui/backends/imgui_impl_glfw.cpp \
+    vendor/imgui/backends/imgui_impl_opengl3.cpp
 
-EXTERNAL_INC_DIRS = $(LIBRARIESDIR) $(IMGUIDIR) $(IMGUIBACKENDDIR)
+# Conversión a objetos (.o)
+MONOPOLY_OBJ := $(MONOPOLY_SRC:%.cpp=$(OBJ_DIR)/%.o)
+VENDOR_OBJ   := $(VENDOR_SRC:%.cpp=$(OBJ_DIR)/%.o)
 
-# 3. Aplicar las banderas correctas a cada grupo
-INCLUDES = $(addprefix -I, $(OWN_INC_DIRS)) $(addprefix -isystem , $(EXTERNAL_INC_DIRS))
+ALL_OBJ      := $(MONOPOLY_OBJ) $(VENDOR_OBJ)
+DEPS         := $(ALL_OBJ:.o=.d)
 
-BASESRC       = main.cpp
-BOARDSRC      =
-SQUARESSRC    =
-PLAYERSRC     =
-GAMESRC       = Game.cpp
-EXTRASRC      =
-STRATEGYSRC   = BasicStrategy.cpp
-LOGGERSRC     =
-SIMULATIONSRC = Simulation.cpp ConfigParser.cpp
-IMGUIWRAPPERSRC = ImGuiMainWindow.cpp
+# Regla principal
+all: $(BIN_DIR)/$(NAME)
 
-# Fuentes de ImGui corregidas (wildcard entrega ruta completa)
-IMGUISRC        = $(wildcard $(IMGUIDIR)/*.cpp)
-IMGUIBACKENDSRC = $(IMGUIBACKENDDIR)/imgui_impl_glfw.cpp \
-                  $(IMGUIBACKENDDIR)/imgui_impl_opengl3.cpp
+# Ejecutable principal (GUI)
+$(BIN_DIR)/$(NAME): $(ALL_OBJ)
+	@mkdir -p $(BIN_DIR)
+	@$(CXX) $(ALL_OBJ) -o $@ $(LDFLAGS)
+	@echo "Construido ejecutable principal: $@"
 
-SRC          = $(strip \
-               $(addprefix $(BASEDIR)/, $(BASESRC)) \
-               $(addprefix $(BOARDDIR)/, $(BOARDSRC)) \
-               $(addprefix $(PLAYERDIR)/, $(PLAYERSRC)) \
-               $(addprefix $(SQUARESDIR)/, $(SQUARESSRC)) \
-               $(addprefix $(GAMEDIR)/, $(GAMESRC)) \
-               $(addprefix $(EXTRADIR)/, $(EXTRASRC)) \
-               $(addprefix $(LOGGERDIR)/, $(LOGGERSRC)) \
-               $(addprefix $(STRATEGYDIR)/, $(STRATEGYSRC)) \
-               $(addprefix $(SIMULATIONDIR)/, $(SIMULATIONSRC)) \
-               $(addprefix $(IMGUIWRAPPERDIR)/, $(IMGUIWRAPPERSRC)) \
-               $(IMGUISRC) \
-               $(IMGUIBACKENDSRC))
-
-OBJ          = $(SRC:%.cpp=$(OBJDIR)/%.o)
-DEP_FILES    = $(OBJ:.o=.d)
-
-all: $(NAME)
-
-$(NAME): $(OBJ)
-	@$(CXX) $(OBJ) -o $(NAME) $(LDFLAGS)
-	@echo "${MODULE_NAME} compiled successfully!"
-
-$(OBJDIR)/$(LIBRARIESDIR)/%.o: $(LIBRARIESDIR)/%.cpp
+# Regla de compilación para CÓDIGO PROPIO (aplica advertencias estrictas y sanitizers)
+$(OBJ_DIR)/monopoly/%.o: monopoly/%.cpp
 	@mkdir -p $(dir $@)
-	@printf "Compiling external %s\n" "$<"
-	@$(CXX) -std=c++23 -MMD -MP $(INCLUDES) -c $< -o $@
-
-$(OBJDIR)/%.o: %.cpp
-	@mkdir -p $(dir $@)
-	@printf "Compiling ${MODULE_NAME} %s\n" "$<"
+	@printf "Compilando monopoly %s\n" "$<"
 	@$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
--include $(DEP_FILES)
+# Regla de compilación para TERCEROS (aplica optimización sin advertencias ni sanitizers)
+$(OBJ_DIR)/vendor/%.o: vendor/%.cpp
+	@mkdir -p $(dir $@)
+	@printf "Compilando vendor %s\n" "$<"
+	@$(CXX) -std=c++23 -MMD -MP $(OPTFLAGS) -w $(INCLUDES) -c $< -o $@
 
+# Reglas utilitarias
 clean:
-	@rm -rf $(OBJDIR)
+	@rm -rf $(OBJ_DIR)/monopoly
+	@rm -f $(BIN_DIR)/$(NAME)
+	@echo "Objetos propios y binario eliminados."
 
-fclean: clean
-	@rm -f $(NAME)
+fclean:
+	@rm -rf $(BUILD_DIR)
+	@echo "Directorio de build eliminado completamente."
 
-re: fclean
+re:
+	@$(MAKE) clean
 	@$(MAKE) all
 
-bear: fclean
-	@bear -- $(MAKE)
-
 release:
-	@$(MAKE) MODE=release re
+	@$(MAKE) MODE=release fclean
+	@$(MAKE) MODE=release all
 
-deps:
-	@sudo apt-get install bear libglfw3-dev libgl1-mesa-dev
+bear:
+	@$(MAKE) fclean
+	@bear -- $(MAKE) MODE=release all
 
-.PHONY: all clean fclean re bear release
+-include $(DEPS)
+
+.PHONY: all clean fclean re release bear

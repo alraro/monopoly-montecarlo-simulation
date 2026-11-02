@@ -1,4 +1,3 @@
-monopoly
 obj/
 *.o
 *.log
@@ -6,3 +5,4 @@ baseline.txt
 *.csv
 .cache
 imgui.ini
+monopoly-montecarlo
